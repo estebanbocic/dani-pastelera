@@ -68,7 +68,7 @@ export async function getProducts(params?: {
       query.append("category_id[]", id)
     }
   }
-  query.set("fields", "+metadata,+categories")
+  query.set("fields", "+metadata,*categories")
   const qs = query.toString() ? `?${query.toString()}` : ""
   return medusaFetch(`/store/products${qs}`)
 }
@@ -77,7 +77,7 @@ export async function getProductByHandle(
   handle: string
 ): Promise<MedusaProduct | null> {
   const data = await medusaFetch<{ products: MedusaProduct[] }>(
-    `/store/products?handle=${handle}&fields=+metadata,+categories`
+    `/store/products?handle=${handle}&fields=+metadata,*categories`
   )
   return data.products[0] || null
 }
