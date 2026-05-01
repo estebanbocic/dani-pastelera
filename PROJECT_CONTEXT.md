@@ -80,7 +80,19 @@ dani-pastelera/
 - [x] Product detail page `/productos/[handle]` with variants, allergens, prep time
 - [x] Seed script: `apps/backend/src/scripts/seed-catalog.ts`
 
-**Next Phase: Phase 3 — Product Configurator**
+**Phase 3 — Product Configurator + Pricing Engine** (COMPLETED)
+
+### Phase 3 Completed
+- [x] React + Tailwind v4 integrated into Astro storefront
+- [x] Customization schemas seeded on Torta Brownie (5 steps) and Cheesecake (3 steps)
+- [x] product-configurator package: real validation and compatibility rules
+- [x] pricing-engine package: real price calculation (base + option deltas)
+- [x] React components: ProductConfigurator, OptionCard, PriceBreakdown
+- [x] Step-by-step configurator with live price breakdown, variant selector, date picker, message input
+- [x] Configurator renders as React island on product detail pages with schemas
+- [x] Seed script: `apps/backend/src/scripts/seed-configurator.ts`
+
+**Next Phase: Phase 5 — Checkout & Mercado Pago**
 
 ## Local Development
 
@@ -113,8 +125,8 @@ pnpm --filter @dani-pastelera/storefront dev   # port 4321
 | 0 | Project Setup | COMPLETED |
 | 1 | Infrastructure (Railway) | Not Started |
 | 2 | Catalog Foundation | COMPLETED |
-| 3 | Product Configurator | Not Started |
-| 4 | Pricing Engine | Not Started |
+| 3 | Product Configurator | COMPLETED |
+| 4 | Pricing Engine | COMPLETED (merged into Phase 3) |
 | 5 | Checkout & Mercado Pago | Not Started |
 | 6 | Admin Operations | Not Started |
 | 7 | UX/UI Polish | Not Started |
@@ -142,8 +154,13 @@ pnpm --filter @dani-pastelera/storefront dev   # port 4321
 - `apps/storefront/src/lib/medusa.ts` — Medusa API client + dietary/allergen label helpers
 - `apps/storefront/src/pages/productos/` — Product listing and detail pages
 - `apps/backend/src/scripts/seed-catalog.ts` — Catalog seed script
+- `apps/backend/src/scripts/seed-configurator.ts` — Configurator schema seed
+- `apps/storefront/src/components/configurator/` — React configurator components
+- `apps/storefront/src/styles/global.css` — Tailwind v4 with bakery design tokens
 
 ## Recent Changes
+
+- **2026-05-01:** Phase 3 completed. Product configurator with step-by-step flow, live pricing, React islands. Pricing engine implemented.
 
 - **2026-05-01:** Phase 2 completed. 9 categories, 4 products with variants/dietary metadata. Product listing and detail pages on storefront. Publishable API key configured.
 - **2026-05-01:** Local dev environment running.

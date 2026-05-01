@@ -8,6 +8,7 @@ import {
   type MedusaProduct,
 } from "../../lib/medusa";
 import es from "../../i18n/es.json";
+import ProductConfigurator from "../../components/configurator/ProductConfigurator";
 
 export async function getStaticPaths() {
   try {
@@ -33,6 +34,14 @@ try {
 const dietaryTags: string[] = product?.metadata?.dietary_tags || [];
 const allergenTags: string[] = product?.metadata?.allergen_tags || [];
 const prepDays: number | null = product?.metadata?.preparation_time_days ?? null;
+const customizationSchema = product?.metadata?.customization_schema || null;
+
+// Prepare variant data for configurator
+const variantData = product?.variants?.map((v) => ({
+  id: v.id,
+  title: v.title,
+  price: v.calculated_price?.calculated_amount ?? v.prices?.[0]?.amount ?? 0,
+})) || [];
 ---
 
 <html lang="es">
@@ -244,18 +253,29 @@ const prepDays: number | null = product?.metadata?.preparation_time_days ?? null
             <p class="prep-time">⏱️ Tiempo de preparación: {prepDays} {prepDays === 1 ? "día" : "días"}</p>
           )}
 
-          <div class="section-title">Opciones disponibles</div>
-          <div class="variants-list">
-            {product.variants.map((v) => {
-              const price = v.calculated_price?.calculated_amount ?? v.prices?.[0]?.amount;
-              return (
-                <div class="variant-row">
-                  <span class="variant-title">{v.title}</span>
-                  {price != null && <span class="variant-price">{formatCLP(price)}</span>}
-                </div>
-              );
-            })}
-          </div>
+          {customizationSchema ? (
+            <ProductConfigurator
+              client:load
+              productTitle={product.title}
+              schema={customizationSchema}
+              variants={variantData}
+            />
+          ) : (
+            <>
+              <div class="section-title">Opciones disponibles</div>
+              <div class="variants-list">
+                {product.variants.map((v) => {
+                  const price = v.calculated_price?.calculated_amount ?? v.prices?.[0]?.amount;
+                  return (
+                    <div class="variant-row">
+                      <span class="variant-title">{v.title}</span>
+                      {price != null && <span class="variant-price">{formatCLP(price)}</span>}
+                    </div>
+                  );
+                })}
+              </div>
+            </>
+          )}
 
           <a class="back-link" href="/productos">← Volver a productos</a>
         </div>
