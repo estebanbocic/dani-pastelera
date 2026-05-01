@@ -37,12 +37,15 @@ const allergenTags: string[] = product?.metadata?.allergen_tags || [];
 const prepDays: number | null = product?.metadata?.preparation_time_days ?? null;
 const customizationSchema = product?.metadata?.customization_schema || null;
 
-// Prepare variant data for configurator
-const variantData = product?.variants?.map((v) => ({
-  id: v.id,
-  title: v.title,
-  price: v.calculated_price?.calculated_amount ?? v.prices?.[0]?.amount ?? 0,
-})) || [];
+// Prepare variant data for configurator — prefer CLP prices
+const variantData = product?.variants?.map((v) => {
+  const clpPrice = v.prices?.find((p: any) => p.currency_code === "clp")?.amount;
+  return {
+    id: v.id,
+    title: v.title,
+    price: v.calculated_price?.calculated_amount ?? clpPrice ?? v.prices?.[0]?.amount ?? 0,
+  };
+}) || [];
 ---
 
 <html lang="es">
