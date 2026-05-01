@@ -64,7 +64,31 @@ dani-pastelera/
 - [x] .env.example for backend and storefront
 - [x] All packages build successfully
 
-**Next Phase: Phase 1 — Infrastructure (Railway)**
+**Next Phase: Phase 2 — Catalog Foundation** (skipping Railway for now, developing locally)
+
+## Local Development
+
+### Prerequisites (installed)
+- PostgreSQL 16 (apt, service: `sudo service postgresql start`)
+- Redis 7 (apt, service: `sudo service redis-server start`)
+- Node.js 22, pnpm 9
+
+### Start Services
+```
+sudo service postgresql start
+sudo service redis-server start
+pnpm --filter @dani-pastelera/backend dev     # port 9000
+pnpm --filter @dani-pastelera/storefront dev   # port 4321
+```
+
+### Admin Dashboard
+- URL: http://localhost:9000/app
+- Email: admin@danipastelera.cl
+- Password: Admin123!
+
+### Database
+- Name: dani_pastelera
+- URL: postgres://postgres:postgres@127.0.0.1:5432/dani_pastelera
 
 ## Phases Overview
 
@@ -102,6 +126,7 @@ dani-pastelera/
 
 ## Recent Changes
 
+- **2026-05-01:** Local dev environment running. PostgreSQL 16, Redis 7 installed. Medusa migrations complete, admin user created, storefront connected to backend.
 - **2026-05-01:** Phase 0 completed. Monorepo scaffolded with Medusa v2.14.2 backend, Astro 6.2 storefront, and 3 shared packages. All builds pass.
 - **2026-05-01:** Project initialized. Repo created, foundational files added, scope docs committed.
 

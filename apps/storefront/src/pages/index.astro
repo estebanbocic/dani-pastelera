@@ -1,17 +1,149 @@
 ---
+import es from "../i18n/es.json";
 
+const MEDUSA_URL = import.meta.env.PUBLIC_MEDUSA_BACKEND_URL || "http://localhost:9000";
+
+let storeInfo = null;
+let products: any[] = [];
+let connectionOk = false;
+
+try {
+  const storeRes = await fetch(`${MEDUSA_URL}/store/products`, {
+    headers: { "Content-Type": "application/json" },
+  });
+  if (storeRes.ok) {
+    const data = await storeRes.json();
+    products = data.products || [];
+    connectionOk = true;
+  }
+} catch (e) {
+  // Backend not reachable
+}
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{es.site.name} — {es.site.tagline}</title>
+    <style>
+      :root {
+        --color-cream: #FFF8F0;
+        --color-warm-brown: #8B6F47;
+        --color-soft-pink: #F5D5CB;
+        --color-sage: #A8B5A0;
+        --color-text: #3D3028;
+        --color-text-light: #6B5B4E;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: var(--color-cream);
+        color: var(--color-text);
+        min-height: 100vh;
+      }
+      .hero {
+        text-align: center;
+        padding: 4rem 1.5rem;
+        background: linear-gradient(135deg, var(--color-soft-pink) 0%, var(--color-cream) 100%);
+      }
+      .hero h1 {
+        font-size: 2.5rem;
+        color: var(--color-warm-brown);
+        margin-bottom: 0.5rem;
+      }
+      .hero p {
+        font-size: 1.2rem;
+        color: var(--color-text-light);
+        max-width: 500px;
+        margin: 0 auto;
+      }
+      .status {
+        text-align: center;
+        padding: 2rem 1.5rem;
+      }
+      .badge {
+        display: inline-block;
+        padding: 0.4rem 1rem;
+        border-radius: 999px;
+        font-size: 0.85rem;
+        font-weight: 600;
+      }
+      .badge-ok { background: #d4edda; color: #155724; }
+      .badge-err { background: #f8d7da; color: #721c24; }
+      .info {
+        max-width: 600px;
+        margin: 2rem auto;
+        padding: 1.5rem;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      }
+      .info h2 { color: var(--color-warm-brown); margin-bottom: 1rem; font-size: 1.3rem; }
+      .info ul { list-style: none; }
+      .info li { padding: 0.4rem 0; color: var(--color-text-light); }
+      .info li::before { content: "✓ "; color: var(--color-sage); font-weight: bold; }
+      .products { max-width: 600px; margin: 1rem auto; padding: 0 1.5rem; }
+      .products h2 { color: var(--color-warm-brown); margin-bottom: 1rem; }
+      .product-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1rem 1.5rem;
+        margin-bottom: 0.75rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      }
+      .product-card h3 { font-size: 1rem; color: var(--color-text); }
+      .product-card p { font-size: 0.85rem; color: var(--color-text-light); }
+      footer {
+        text-align: center;
+        padding: 2rem;
+        color: var(--color-text-light);
+        font-size: 0.85rem;
+      }
+    </style>
+  </head>
+  <body>
+    <section class="hero">
+      <h1>🧁 {es.site.name}</h1>
+      <p>{es.site.tagline}</p>
+    </section>
+
+    <section class="status">
+      {connectionOk ? (
+        <span class="badge badge-ok">✓ Backend conectado — {MEDUSA_URL}</span>
+      ) : (
+        <span class="badge badge-err">✗ Backend no disponible — {MEDUSA_URL}</span>
+      )}
+    </section>
+
+    <div class="info">
+      <h2>MVP Local — Estado</h2>
+      <ul>
+        <li>Medusa.js v2 backend en puerto 9000</li>
+        <li>Astro storefront en puerto 4321</li>
+        <li>PostgreSQL conectado</li>
+        <li>Redis conectado</li>
+        <li>Admin: <a href="http://localhost:9000/app">http://localhost:9000/app</a></li>
+      </ul>
+    </div>
+
+    {products.length > 0 && (
+      <section class="products">
+        <h2>Productos ({products.length})</h2>
+        {products.map((p: any) => (
+          <div class="product-card">
+            <h3>{p.title}</h3>
+            {p.description && <p>{p.description}</p>}
+          </div>
+        ))}
+      </section>
+    )}
+
+    <footer>
+      <p>&copy; 2026 Dani Pastelera — Pastelería saludable, hecha con cariño</p>
+    </footer>
+  </body>
 </html>
