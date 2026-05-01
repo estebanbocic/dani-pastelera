@@ -1,0 +1,273 @@
+---
+import {
+  getProducts,
+  getCategories,
+  getLowestPrice,
+  formatCLP,
+  getDietaryLabel,
+  type MedusaProduct,
+} from "../../lib/medusa";
+import es from "../../i18n/es.json";
+
+let products: MedusaProduct[] = [];
+let categories: { id: string; name: string; handle: string }[] = [];
+let error: string | null = null;
+
+try {
+  const [prodData, catData] = await Promise.all([
+    getProducts({ limit: 50 }),
+    getCategories(),
+  ]);
+  products = prodData.products;
+  categories = catData.product_categories;
+} catch (e: any) {
+  error = e.message;
+}
+---
+
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Productos — {es.site.name}</title>
+    <style>
+      :root {
+        --color-cream: #FFF8F0;
+        --color-warm-brown: #8B6F47;
+        --color-soft-pink: #F5D5CB;
+        --color-sage: #A8B5A0;
+        --color-text: #3D3028;
+        --color-text-light: #6B5B4E;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: var(--color-cream);
+        color: var(--color-text);
+      }
+      nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 1.5rem;
+        background: white;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      }
+      nav a { color: var(--color-warm-brown); text-decoration: none; font-weight: 600; }
+      nav .links { display: flex; gap: 1.5rem; }
+      nav .links a { font-weight: 400; color: var(--color-text-light); font-size: 0.9rem; }
+      nav .links a:hover { color: var(--color-warm-brown); }
+
+      .page-header {
+        text-align: center;
+        padding: 2.5rem 1.5rem 1.5rem;
+      }
+      .page-header h1 {
+        font-size: 2rem;
+        color: var(--color-warm-brown);
+      }
+      .page-header p {
+        color: var(--color-text-light);
+        margin-top: 0.5rem;
+      }
+
+      .categories {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        justify-content: center;
+        padding: 0 1.5rem 2rem;
+        max-width: 800px;
+        margin: 0 auto;
+      }
+      .cat-btn {
+        display: inline-block;
+        padding: 0.4rem 1rem;
+        border-radius: 999px;
+        background: white;
+        color: var(--color-text-light);
+        font-size: 0.85rem;
+        text-decoration: none;
+        border: 1px solid #e8e0d8;
+        transition: all 0.2s;
+      }
+      .cat-btn:hover, .cat-btn.active {
+        background: var(--color-warm-brown);
+        color: white;
+        border-color: var(--color-warm-brown);
+      }
+
+      .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 0 1.5rem 3rem;
+      }
+
+      .product-card {
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        transition: transform 0.2s, box-shadow 0.2s;
+        text-decoration: none;
+        color: inherit;
+        display: block;
+      }
+      .product-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+      }
+      .product-img {
+        width: 100%;
+        height: 200px;
+        background: linear-gradient(135deg, var(--color-soft-pink), #f0e6dd);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+      }
+      .product-body {
+        padding: 1.25rem;
+      }
+      .product-body h3 {
+        font-size: 1.1rem;
+        margin-bottom: 0.4rem;
+        color: var(--color-text);
+      }
+      .product-body .desc {
+        font-size: 0.85rem;
+        color: var(--color-text-light);
+        line-height: 1.4;
+        margin-bottom: 0.75rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      .badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.35rem;
+        margin-bottom: 0.75rem;
+      }
+      .badge {
+        display: inline-block;
+        padding: 0.2rem 0.6rem;
+        border-radius: 999px;
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: white;
+      }
+      .product-price {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--color-warm-brown);
+      }
+      .product-price span {
+        font-size: 0.8rem;
+        font-weight: 400;
+        color: var(--color-text-light);
+      }
+      .cta {
+        display: inline-block;
+        margin-top: 0.75rem;
+        padding: 0.5rem 1.25rem;
+        background: var(--color-warm-brown);
+        color: white;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 600;
+      }
+      .error-box {
+        max-width: 600px;
+        margin: 2rem auto;
+        padding: 1.5rem;
+        background: #f8d7da;
+        border-radius: 12px;
+        color: #721c24;
+        text-align: center;
+      }
+      footer {
+        text-align: center;
+        padding: 2rem;
+        color: var(--color-text-light);
+        font-size: 0.85rem;
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <a href="/">🧁 {es.site.name}</a>
+      <div class="links">
+        <a href="/">Inicio</a>
+        <a href="/productos">Productos</a>
+      </div>
+    </nav>
+
+    <section class="page-header">
+      <h1>Nuestros Productos</h1>
+      <p>Pastelería saludable para todos los gustos</p>
+    </section>
+
+    {categories.length > 0 && (
+      <div class="categories">
+        <a class="cat-btn active" href="/productos">Todos</a>
+        {categories.map((cat) => (
+          <a class="cat-btn" href={`/productos?cat=${cat.handle}`}>
+            {cat.name}
+          </a>
+        ))}
+      </div>
+    )}
+
+    {error ? (
+      <div class="error-box">
+        <p>No pudimos cargar los productos. Verifica que el backend esté corriendo.</p>
+        <p style="font-size:0.8rem;margin-top:0.5rem;">{error}</p>
+      </div>
+    ) : (
+      <div class="products-grid">
+        {products.map((product) => {
+          const dietaryTags: string[] = product.metadata?.dietary_tags || [];
+          const lowestPrice = getLowestPrice(product);
+          return (
+            <a class="product-card" href={`/productos/${product.handle}`}>
+              <div class="product-img">🧁</div>
+              <div class="product-body">
+                <h3>{product.title}</h3>
+                {dietaryTags.length > 0 && (
+                  <div class="badges">
+                    {dietaryTags.map((tag: string) => {
+                      const { label, color } = getDietaryLabel(tag);
+                      return (
+                        <span class="badge" style={`background:${color}`}>
+                          {label}
+                        </span>
+                      );
+                    })}
+                  </div>
+                )}
+                {product.description && (
+                  <p class="desc">{product.description}</p>
+                )}
+                {lowestPrice != null && (
+                  <div class="product-price">
+                    <span>Desde </span>{formatCLP(lowestPrice)}
+                  </div>
+                )}
+                <span class="cta">Ver producto</span>
+              </div>
+            </a>
+          );
+        })}
+      </div>
+    )}
+
+    <footer>
+      <p>&copy; 2026 Dani Pastelera — Pastelería saludable, hecha con cariño</p>
+    </footer>
+  </body>
+</html>

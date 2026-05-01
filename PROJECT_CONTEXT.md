@@ -64,7 +64,23 @@ dani-pastelera/
 - [x] .env.example for backend and storefront
 - [x] All packages build successfully
 
-**Next Phase: Phase 2 — Catalog Foundation** (skipping Railway for now, developing locally)
+**Phase 2 — Catalog Foundation** (COMPLETED)
+
+### Phase 2 Completed
+- [x] Cleaned Medusa demo seed data (4 sample products removed)
+- [x] 9 product categories created: Sin Gluten, Sin Azúcar, Vegano, Tortas, Brownies, Galletas, Cupcakes, Cajas de Regalo, Tradicional
+- [x] Publishable API key created and linked to sales channel
+- [x] 4 sample products with variants and dietary/allergen metadata:
+  - Torta Brownie Saludable (4 variants: 8/10/15/20 porciones)
+  - Cheesecake Sin Azúcar (3 variants: 8/10/15 porciones)
+  - Cupcakes Veganos (2 variants: caja de 6/12)
+  - Galletas Sin Gluten Surtidas (3 variants: 6/12/24 unidades)
+- [x] Medusa API client helper (`apps/storefront/src/lib/medusa.ts`)
+- [x] Product listing page `/productos` with dietary badges, category pills, price from
+- [x] Product detail page `/productos/[handle]` with variants, allergens, prep time
+- [x] Seed script: `apps/backend/src/scripts/seed-catalog.ts`
+
+**Next Phase: Phase 3 — Product Configurator**
 
 ## Local Development
 
@@ -96,7 +112,7 @@ pnpm --filter @dani-pastelera/storefront dev   # port 4321
 |-------|------|--------|
 | 0 | Project Setup | COMPLETED |
 | 1 | Infrastructure (Railway) | Not Started |
-| 2 | Catalog Foundation | Not Started |
+| 2 | Catalog Foundation | COMPLETED |
 | 3 | Product Configurator | Not Started |
 | 4 | Pricing Engine | Not Started |
 | 5 | Checkout & Mercado Pago | Not Started |
@@ -123,10 +139,14 @@ pnpm --filter @dani-pastelera/storefront dev   # port 4321
 - `packages/pricing-engine/` — Price calculation logic
 - `packages/product-configurator/` — Configuration schema & validation
 - `apps/storefront/src/i18n/` — Translation files (es.json, en.json)
+- `apps/storefront/src/lib/medusa.ts` — Medusa API client + dietary/allergen label helpers
+- `apps/storefront/src/pages/productos/` — Product listing and detail pages
+- `apps/backend/src/scripts/seed-catalog.ts` — Catalog seed script
 
 ## Recent Changes
 
-- **2026-05-01:** Local dev environment running. PostgreSQL 16, Redis 7 installed. Medusa migrations complete, admin user created, storefront connected to backend.
+- **2026-05-01:** Phase 2 completed. 9 categories, 4 products with variants/dietary metadata. Product listing and detail pages on storefront. Publishable API key configured.
+- **2026-05-01:** Local dev environment running.
 - **2026-05-01:** Phase 0 completed. Monorepo scaffolded with Medusa v2.14.2 backend, Astro 6.2 storefront, and 3 shared packages. All builds pass.
 - **2026-05-01:** Project initialized. Repo created, foundational files added, scope docs committed.
 

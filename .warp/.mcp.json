@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "medusa-admin": {
+      "command": "npx",
+      "args": ["-y", "mcp-medusa"],
+      "env": {
+        "MEDUSA_BASE_URL": "http://localhost:9000",
+        "MEDUSA_API_KEY": "sk_9411821114e7ec9f8ac55c2b9286cb89126c176b0dd458f334a0b5202a119ffa"
+      }
+    }
+  }
+}
