@@ -214,9 +214,9 @@ try {
 
     {categories.length > 0 && (
       <div class="categories">
-        <a class="cat-btn active" href="/productos">Todos</a>
+        <a class="cat-btn" data-cat="all" href="/productos">Todos</a>
         {categories.map((cat) => (
-          <a class="cat-btn" href={`/productos?cat=${cat.handle}`}>
+          <a class="cat-btn" data-cat={cat.handle} href={`/productos?cat=${cat.handle}`}>
             {cat.name}
           </a>
         ))}
@@ -234,7 +234,8 @@ try {
           const dietaryTags: string[] = product.metadata?.dietary_tags || [];
           const lowestPrice = getLowestPrice(product);
           return (
-            <a class="product-card" href={`/productos/${product.handle}`}>
+            <a class="product-card" href={`/productos/${product.handle}`}
+              data-categories={product.categories?.map((c: any) => c.handle).join(",") || ""}>
               <div class="product-img">🧁</div>
               <div class="product-body">
                 <h3>{product.title}</h3>
@@ -269,5 +270,45 @@ try {
     <footer>
       <p>&copy; 2026 Dani Pastelera — Pastelería saludable, hecha con cariño</p>
     </footer>
+
+    <script>
+      function applyFilter() {
+        const params = new URLSearchParams(window.location.search);
+        const activeCat = params.get("cat") || "all";
+
+        // Update active button
+        document.querySelectorAll(".cat-btn").forEach((btn) => {
+          const btnCat = btn.getAttribute("data-cat");
+          btn.classList.toggle("active", btnCat === activeCat);
+        });
+
+        // Filter product cards
+        document.querySelectorAll(".product-card").forEach((card) => {
+          const cats = (card.getAttribute("data-categories") || "").split(",");
+          if (activeCat === "all" || cats.includes(activeCat)) {
+            (card as HTMLElement).style.display = "";
+          } else {
+            (card as HTMLElement).style.display = "none";
+          }
+        });
+      }
+
+      // Handle clicks without full page reload
+      document.querySelectorAll(".cat-btn").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          e.preventDefault();
+          const cat = btn.getAttribute("data-cat") || "all";
+          const url = cat === "all" ? "/productos" : `/productos?cat=${cat}`;
+          window.history.pushState({}, "", url);
+          applyFilter();
+        });
+      });
+
+      // Apply on load
+      applyFilter();
+
+      // Handle browser back/forward
+      window.addEventListener("popstate", applyFilter);
+    </script>
   </body>
 </html>
