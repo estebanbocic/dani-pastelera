@@ -87,13 +87,9 @@ export default async function seedCatalog({ container }: ExecArgs) {
   })
   logger.info("  ✅ Linked to default sales channel")
 
-  // ─── Get default region for pricing ───────────────────────
-  const { data: regions } = await query.graph({
-    entity: "region",
-    fields: ["id", "name", "currency_code"],
-  })
-  const defaultRegion = regions[0]
-  logger.info(`🌍 Using region: ${defaultRegion.name} (${defaultRegion.currency_code})`)
+  // ─── Currency ──────────────────────────────────────────────
+  const CURRENCY = "clp" // Chilean Peso — only currency for this project
+  logger.info(`💰 Currency: ${CURRENCY.toUpperCase()}`)
 
   // ─── Create sample products ───────────────────────────────
   logger.info("🧁 Creating sample products...")
@@ -123,7 +119,7 @@ export default async function seedCatalog({ container }: ExecArgs) {
           title: "8 porciones",
           sku: "TBS-8",
           manage_inventory: false,
-          prices: [{ amount: 18990, currency_code: defaultRegion.currency_code }],
+          prices: [{ amount: 18990, currency_code: CURRENCY }],
           options: { "Porciones": "8 porciones" },
           metadata: { portions: 8 },
         },
@@ -131,7 +127,7 @@ export default async function seedCatalog({ container }: ExecArgs) {
           title: "10 porciones",
           sku: "TBS-10",
           manage_inventory: false,
-          prices: [{ amount: 22990, currency_code: defaultRegion.currency_code }],
+          prices: [{ amount: 22990, currency_code: CURRENCY }],
           options: { "Porciones": "10 porciones" },
           metadata: { portions: 10 },
         },
@@ -139,7 +135,7 @@ export default async function seedCatalog({ container }: ExecArgs) {
           title: "15 porciones",
           sku: "TBS-15",
           manage_inventory: false,
-          prices: [{ amount: 32990, currency_code: defaultRegion.currency_code }],
+          prices: [{ amount: 32990, currency_code: CURRENCY }],
           options: { "Porciones": "15 porciones" },
           metadata: { portions: 15 },
         },
@@ -147,7 +143,7 @@ export default async function seedCatalog({ container }: ExecArgs) {
           title: "20 porciones",
           sku: "TBS-20",
           manage_inventory: false,
-          prices: [{ amount: 42990, currency_code: defaultRegion.currency_code }],
+          prices: [{ amount: 42990, currency_code: CURRENCY }],
           options: { "Porciones": "20 porciones" },
           metadata: { portions: 20 },
         },
@@ -178,7 +174,7 @@ export default async function seedCatalog({ container }: ExecArgs) {
           title: "8 porciones",
           sku: "CSA-8",
           manage_inventory: false,
-          prices: [{ amount: 21990, currency_code: defaultRegion.currency_code }],
+          prices: [{ amount: 21990, currency_code: CURRENCY }],
           options: { "Porciones": "8 porciones" },
           metadata: { portions: 8 },
         },
@@ -186,7 +182,7 @@ export default async function seedCatalog({ container }: ExecArgs) {
           title: "10 porciones",
           sku: "CSA-10",
           manage_inventory: false,
-          prices: [{ amount: 26990, currency_code: defaultRegion.currency_code }],
+          prices: [{ amount: 26990, currency_code: CURRENCY }],
           options: { "Porciones": "10 porciones" },
           metadata: { portions: 10 },
         },
@@ -194,7 +190,7 @@ export default async function seedCatalog({ container }: ExecArgs) {
           title: "15 porciones",
           sku: "CSA-15",
           manage_inventory: false,
-          prices: [{ amount: 36990, currency_code: defaultRegion.currency_code }],
+          prices: [{ amount: 36990, currency_code: CURRENCY }],
           options: { "Porciones": "15 porciones" },
           metadata: { portions: 15 },
         },
@@ -224,7 +220,7 @@ export default async function seedCatalog({ container }: ExecArgs) {
           title: "Caja de 6",
           sku: "CV-6",
           manage_inventory: false,
-          prices: [{ amount: 12990, currency_code: defaultRegion.currency_code }],
+          prices: [{ amount: 12990, currency_code: CURRENCY }],
           options: { "Cantidad": "Caja de 6" },
           metadata: { units: 6 },
         },
@@ -232,7 +228,7 @@ export default async function seedCatalog({ container }: ExecArgs) {
           title: "Caja de 12",
           sku: "CV-12",
           manage_inventory: false,
-          prices: [{ amount: 23990, currency_code: defaultRegion.currency_code }],
+          prices: [{ amount: 23990, currency_code: CURRENCY }],
           options: { "Cantidad": "Caja de 12" },
           metadata: { units: 12 },
         },
@@ -262,7 +258,7 @@ export default async function seedCatalog({ container }: ExecArgs) {
           title: "Bolsa de 6",
           sku: "GSG-6",
           manage_inventory: false,
-          prices: [{ amount: 6990, currency_code: defaultRegion.currency_code }],
+          prices: [{ amount: 6990, currency_code: CURRENCY }],
           options: { "Cantidad": "Bolsa de 6" },
           metadata: { units: 6 },
         },
@@ -270,7 +266,7 @@ export default async function seedCatalog({ container }: ExecArgs) {
           title: "Bolsa de 12",
           sku: "GSG-12",
           manage_inventory: false,
-          prices: [{ amount: 11990, currency_code: defaultRegion.currency_code }],
+          prices: [{ amount: 11990, currency_code: CURRENCY }],
           options: { "Cantidad": "Bolsa de 12" },
           metadata: { units: 12 },
         },
@@ -278,7 +274,7 @@ export default async function seedCatalog({ container }: ExecArgs) {
           title: "Caja regalo de 24",
           sku: "GSG-24",
           manage_inventory: false,
-          prices: [{ amount: 19990, currency_code: defaultRegion.currency_code }],
+          prices: [{ amount: 19990, currency_code: CURRENCY }],
           options: { "Cantidad": "Caja regalo de 24" },
           metadata: { units: 24 },
         },
