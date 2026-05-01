@@ -1,0 +1,24 @@
+{
+  "site": {
+    "name": "Dani Pastelera",
+    "tagline": "Pastelería saludable, hecha con cariño"
+  },
+  "nav": {
+    "home": "Inicio",
+    "products": "Productos",
+    "about": "Nosotros",
+    "contact": "Contacto",
+    "cart": "Carrito",
+    "faq": "Preguntas frecuentes"
+  },
+  "product": {
+    "addToCart": "Agregar al carrito",
+    "viewProduct": "Ver producto",
+    "priceFrom": "Desde"
+  },
+  "checkout": {
+    "title": "Checkout",
+    "orderConfirmation": "¡Gracias por tu pedido!",
+    "orderConfirmationMessage": "Recibimos tu compra y comenzaremos a prepararla según la fecha seleccionada."
+  }
+}

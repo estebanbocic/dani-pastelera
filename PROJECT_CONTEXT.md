@@ -44,7 +44,7 @@ dani-pastelera/
 
 ## Current Phase
 
-**Phase 0 — Project Setup** (IN PROGRESS)
+**Phase 0 — Project Setup** (COMPLETED)
 
 ### Completed
 - [x] GitHub repo created (estebanbocic/dani-pastelera, private)
@@ -54,20 +54,23 @@ dani-pastelera/
 - [x] Scope docs copied to docs/
 - [x] README.md created
 - [x] .gitignore created
+- [x] pnpm monorepo initialized (pnpm-workspace.yaml, root package.json, tsconfig.base.json)
+- [x] Medusa.js v2 backend scaffolded (apps/backend/) — v2.14.2
+- [x] Astro storefront scaffolded (apps/storefront/) — Astro 6.2
+- [x] shared-types package with domain types (LocalizedText, DietaryTag, AllergenTag, pricing, configurator types)
+- [x] pricing-engine package scaffolded with placeholder functions
+- [x] product-configurator package scaffolded with placeholder functions
+- [x] i18n foundation: es.json and en.json translation files
+- [x] .env.example for backend and storefront
+- [x] All packages build successfully
 
-### Not Started
-- [ ] Monorepo initialized (pnpm workspaces or turborepo)
-- [ ] Medusa.js v2 backend initialized
-- [ ] Astro storefront initialized
-- [ ] Shared packages scaffolded
-- [ ] TypeScript configured across workspaces
-- [ ] Local development verified (backend + storefront run)
+**Next Phase: Phase 1 — Infrastructure (Railway)**
 
 ## Phases Overview
 
 | Phase | Name | Status |
 |-------|------|--------|
-| 0 | Project Setup | IN PROGRESS |
+| 0 | Project Setup | COMPLETED |
 | 1 | Infrastructure (Railway) | Not Started |
 | 2 | Catalog Foundation | Not Started |
 | 3 | Product Configurator | Not Started |
@@ -90,9 +93,16 @@ dani-pastelera/
 - `docs/` — Full scope and architecture documentation (12 files)
 - `PROJECT_CONTEXT.md` — This file (current state)
 - `AGENTS.md` — Warp AI rules for this project
+- `apps/backend/` — Medusa.js v2 backend (port 9000)
+- `apps/storefront/` — Astro storefront (port 4321)
+- `packages/shared-types/` — Domain types used across all packages
+- `packages/pricing-engine/` — Price calculation logic
+- `packages/product-configurator/` — Configuration schema & validation
+- `apps/storefront/src/i18n/` — Translation files (es.json, en.json)
 
 ## Recent Changes
 
+- **2026-05-01:** Phase 0 completed. Monorepo scaffolded with Medusa v2.14.2 backend, Astro 6.2 storefront, and 3 shared packages. All builds pass.
 - **2026-05-01:** Project initialized. Repo created, foundational files added, scope docs committed.
 
 ---

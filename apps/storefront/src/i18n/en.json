@@ -1,0 +1,24 @@
+{
+  "site": {
+    "name": "Dani Pastelera",
+    "tagline": "Healthy pastry, made with love"
+  },
+  "nav": {
+    "home": "Home",
+    "products": "Products",
+    "about": "About",
+    "contact": "Contact",
+    "cart": "Cart",
+    "faq": "FAQ"
+  },
+  "product": {
+    "addToCart": "Add to cart",
+    "viewProduct": "View product",
+    "priceFrom": "From"
+  },
+  "checkout": {
+    "title": "Checkout",
+    "orderConfirmation": "Thank you for your order!",
+    "orderConfirmationMessage": "We received your purchase and will prepare it according to the selected date."
+  }
+}

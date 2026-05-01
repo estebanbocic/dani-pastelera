@@ -1,0 +1,23 @@
+{
+  "name": "dani-pastelera",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Dani Pastelera — Boutique ecommerce for artisanal healthy bakery",
+  "scripts": {
+    "dev": "pnpm --parallel --filter @dani-pastelera/backend --filter @dani-pastelera/storefront dev",
+    "dev:backend": "pnpm --filter @dani-pastelera/backend dev",
+    "dev:storefront": "pnpm --filter @dani-pastelera/storefront dev",
+    "build": "pnpm -r build",
+    "build:backend": "pnpm --filter @dani-pastelera/backend build",
+    "build:storefront": "pnpm --filter @dani-pastelera/storefront build",
+    "build:packages": "pnpm --filter @dani-pastelera/shared-types --filter @dani-pastelera/pricing-engine --filter @dani-pastelera/product-configurator build",
+    "typecheck": "pnpm -r typecheck",
+    "lint": "pnpm -r lint",
+    "clean": "pnpm -r clean"
+  },
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=9"
+  },
+  "packageManager": "pnpm@9.15.9"
+}
