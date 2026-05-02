@@ -94,7 +94,7 @@ export default function CartDrawer() {
                       Cantidad: {item.quantity}
                     </span>
                     <span className="font-bold text-[#8B6F47]">
-                      {formatCLP((item.metadata?.total_amount as number) || item.unit_price * item.quantity)}
+                      {formatCLP(item.unit_price * item.quantity)}
                     </span>
                   </div>
                 </div>
@@ -109,9 +109,7 @@ export default function CartDrawer() {
             <div className="flex justify-between text-sm">
               <span className="text-[#6B5B4E]">Subtotal</span>
               <span className="font-bold text-[#3D3028]">
-                {formatCLP(
-                  items.reduce((sum, item) => sum + ((item.metadata?.total_amount as number) || item.unit_price * item.quantity), 0)
-                )}
+                {formatCLP(cart?.total || cart?.subtotal || 0)}
               </span>
             </div>
             <a

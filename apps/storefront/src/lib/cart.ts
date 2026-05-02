@@ -146,6 +146,34 @@ export async function removeLineItem(
   return data.cart
 }
 
+// ─── Custom: add configured item with correct price ───
+
+export async function addConfiguredItem(
+  cartId: string,
+  variantId: string,
+  quantity: number,
+  unitPrice: number,
+  metadata?: Record<string, any>
+): Promise<Cart> {
+  const res = await fetch(`${MEDUSA_URL}/store/custom-cart`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      cart_id: cartId,
+      variant_id: variantId,
+      quantity,
+      unit_price: unitPrice,
+      metadata,
+    }),
+  })
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}))
+    throw new Error(err.message || `Add configured item failed: ${res.status}`)
+  }
+  const data = await res.json()
+  return data.cart
+}
+
 // ─── Helper: ensure cart exists ──────────────────────
 
 export async function ensureCart(regionId?: string): Promise<Cart> {

@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useEffect, useCallback, type React
 import {
   ensureCart,
   addLineItem,
+  addConfiguredItem,
   removeLineItem,
   getCart,
   getCartId,
@@ -62,7 +63,21 @@ export default function CartProvider({ children }: { children: ReactNode }) {
     setIsLoading(true)
     try {
       const currentCart = await ensureCart()
-      const updated = await addLineItem(currentCart.id, variantId, quantity, metadata)
+      let updated: Cart
+
+      // If metadata has total_amount, use custom endpoint with correct price
+      if (metadata?.total_amount) {
+        updated = await addConfiguredItem(
+          currentCart.id,
+          variantId,
+          quantity,
+          metadata.total_amount,
+          metadata
+        )
+      } else {
+        updated = await addLineItem(currentCart.id, variantId, quantity, metadata)
+      }
+
       setCart(updated)
       setIsOpen(true) // Open drawer after adding
     } catch (err) {

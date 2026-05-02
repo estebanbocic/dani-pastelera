@@ -38,10 +38,7 @@ export default function OrderConfirmation() {
   }
 
   const items = cart.items || []
-  const subtotal = items.reduce(
-    (sum: number, item: any) => sum + ((item.metadata?.total_amount as number) || item.unit_price * item.quantity),
-    0
-  )
+  const subtotal = cart.total || cart.subtotal || 0
 
   return (
     <div className="text-center">
@@ -73,7 +70,7 @@ export default function OrderConfirmation() {
                 <p className="text-xs text-[#6B5B4E]">{item.variant?.title}</p>
               </div>
               <span className="font-bold text-[#8B6F47] text-sm">
-                {formatCLP((item.metadata?.total_amount as number) || item.unit_price * item.quantity)}
+                {formatCLP(item.unit_price * item.quantity)}
               </span>
             </div>
           ))}
