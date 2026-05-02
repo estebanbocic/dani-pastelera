@@ -63,11 +63,10 @@ export default function CartProvider({ children }: { children: ReactNode }) {
     setIsLoading(true)
     try {
       const currentCart = await ensureCart()
-      let updated: Cart
 
       // If metadata has total_amount, use custom endpoint with correct price
       if (metadata?.total_amount) {
-        updated = await addConfiguredItem(
+        await addConfiguredItem(
           currentCart.id,
           variantId,
           quantity,
@@ -75,10 +74,14 @@ export default function CartProvider({ children }: { children: ReactNode }) {
           metadata
         )
       } else {
-        updated = await addLineItem(currentCart.id, variantId, quantity, metadata)
+        await addLineItem(currentCart.id, variantId, quantity, metadata)
       }
 
-      setCart(updated)
+      // Always re-fetch the cart after mutation to get fully expanded relations
+      // (variant, product, prices). The mutation responses may not include them.
+      const fresh = await getCart(currentCart.id)
+      if (fresh) setCart(fresh)
+
       setIsOpen(true) // Open drawer after adding
     } catch (err) {
       console.error("Failed to add item:", err)
@@ -91,8 +94,11 @@ export default function CartProvider({ children }: { children: ReactNode }) {
     if (!cart) return
     setIsLoading(true)
     try {
-      const updated = await removeLineItem(cart.id, lineItemId)
-      setCart(updated)
+      await removeLineItem(cart.id, lineItemId)
+      // Re-fetch for consistency with addItem
+      const fresh = await getCart(cart.id)
+      if (fresh) setCart(fresh)
+      else setCart((prev) => prev ? { ...prev, items: prev.items.filter((i) => i.id !== lineItemId) } : null)
     } catch (err) {
       console.error("Failed to remove item:", err)
     } finally {

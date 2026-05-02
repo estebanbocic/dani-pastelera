@@ -1,4 +1,5 @@
 import type { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
+import { capturePaymentWorkflow } from "@medusajs/core-flows"
 
 /**
  * Mercado Pago IPN (Instant Payment Notification) webhook endpoint.
@@ -8,9 +9,17 @@ import type { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
  * Mercado Pago sends notifications when payment status changes.
  * This endpoint is idempotent — processing the same notification twice
  * will not create duplicate side effects.
+ *
+ * On approved payment:
+ * - Finds the Medusa order by external_reference
+ * - Captures the payment via Medusa workflow
+ * - Sets metadata.custom_status to "payment_confirmed"
+ *
+ * On rejected/cancelled payment:
+ * - Sets metadata.custom_status to "cancelled"
  */
 
-// Track processed notifications to ensure idempotency
+// Track processed notifications to ensure idempotency (in-memory; survives restarts via re-processing safely)
 const processedNotifications = new Set<string>()
 
 export async function POST(req: MedusaRequest, res: MedusaResponse) {
@@ -69,10 +78,87 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
 
       if (payment.status === "approved") {
         logger.info(`[MP Webhook] ✅ Payment approved for ref=${payment.external_reference}`)
-        // Mark as processed
+
+        const externalRef = payment.external_reference as string | undefined
+        if (externalRef) {
+          try {
+            const query = req.scope.resolve("query")
+
+            // Find the order by cart_id or order id stored in external_reference
+            const { data: orders } = await query.graph({
+              entity: "order",
+              fields: ["id", "display_id", "metadata", "payment_collections.*", "payment_collections.payments.*"],
+              filters: { id: externalRef },
+            })
+
+            const order = orders[0]
+            if (order) {
+              // Capture payment via Medusa workflow
+              const paymentCollection = (order as any).payment_collections?.[0]
+              const medusaPayment = paymentCollection?.payments?.[0]
+
+              if (medusaPayment?.id) {
+                await capturePaymentWorkflow(req.scope).run({
+                  input: { payment_id: medusaPayment.id },
+                })
+                logger.info(`[MP Webhook] 💳 Payment captured for order #${order.display_id}`)
+              }
+
+              // Update custom status
+              const orderService = req.scope.resolve("order") as any
+              await orderService.updateOrders({
+                selector: { id: order.id },
+                data: {
+                  metadata: {
+                    ...(order.metadata as Record<string, any> || {}),
+                    custom_status: "payment_confirmed",
+                    custom_status_updated_at: new Date().toISOString(),
+                    mp_payment_id: paymentId,
+                  },
+                },
+              })
+              logger.info(`[MP Webhook] 📦 Order #${order.display_id} status set to payment_confirmed`)
+            } else {
+              logger.warn(`[MP Webhook] Order not found for external_reference=${externalRef}`)
+            }
+          } catch (err: any) {
+            logger.error(`[MP Webhook] Error processing approved payment: ${err.message}`)
+          }
+        }
+
         processedNotifications.add(notificationKey)
-      } else if (payment.status === "rejected") {
-        logger.info(`[MP Webhook] ❌ Payment rejected for ref=${payment.external_reference}`)
+      } else if (payment.status === "rejected" || payment.status === "cancelled") {
+        logger.info(`[MP Webhook] ❌ Payment ${payment.status} for ref=${payment.external_reference}`)
+
+        const externalRef = payment.external_reference as string | undefined
+        if (externalRef) {
+          try {
+            const query = req.scope.resolve("query")
+            const { data: orders } = await query.graph({
+              entity: "order",
+              fields: ["id", "display_id", "metadata"],
+              filters: { id: externalRef },
+            })
+            const order = orders[0]
+            if (order) {
+              const orderService = req.scope.resolve("order") as any
+              await orderService.updateOrders({
+                selector: { id: order.id },
+                data: {
+                  metadata: {
+                    ...(order.metadata as Record<string, any> || {}),
+                    custom_status: "cancelled",
+                    custom_status_updated_at: new Date().toISOString(),
+                  },
+                },
+              })
+              logger.info(`[MP Webhook] Order #${order.display_id} status set to cancelled`)
+            }
+          } catch (err: any) {
+            logger.error(`[MP Webhook] Error processing rejected payment: ${err.message}`)
+          }
+        }
+
         processedNotifications.add(notificationKey)
       }
     }

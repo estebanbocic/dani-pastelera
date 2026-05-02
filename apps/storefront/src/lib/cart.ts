@@ -78,7 +78,17 @@ export async function createCart(regionId?: string): Promise<Cart> {
 
 export async function getCart(cartId: string): Promise<Cart | null> {
   try {
-    const res = await fetch(`${MEDUSA_URL}/store/carts/${cartId}`, { headers })
+    // Request expanded relations so CartDrawer always has variant/product data
+    const fields = "*items,*items.variant,*items.variant.product"
+    const res = await fetch(
+      `${MEDUSA_URL}/store/carts/${cartId}?fields=${encodeURIComponent(fields)}`,
+      { headers }
+    )
+    if (res.status === 404) {
+      // Cart completed or expired — clear the stale ID
+      clearCartId()
+      return null
+    }
     if (!res.ok) return null
     const data = await res.json()
     return data.cart

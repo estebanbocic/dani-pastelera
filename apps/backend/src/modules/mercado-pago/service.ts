@@ -1,9 +1,23 @@
-import { AbstractPaymentProvider } from "@medusajs/framework/utils"
+import { AbstractPaymentProvider, MedusaError } from "@medusajs/framework/utils"
 import {
-  CreatePaymentProviderSession,
-  UpdatePaymentProviderSession,
-  PaymentProviderError,
-  PaymentProviderSessionResponse,
+  InitiatePaymentInput,
+  InitiatePaymentOutput,
+  UpdatePaymentInput,
+  UpdatePaymentOutput,
+  AuthorizePaymentInput,
+  AuthorizePaymentOutput,
+  CapturePaymentInput,
+  CapturePaymentOutput,
+  RefundPaymentInput,
+  RefundPaymentOutput,
+  CancelPaymentInput,
+  CancelPaymentOutput,
+  DeletePaymentInput,
+  DeletePaymentOutput,
+  RetrievePaymentInput,
+  RetrievePaymentOutput,
+  GetPaymentStatusInput,
+  GetPaymentStatusOutput,
   PaymentSessionStatus,
   ProviderWebhookPayload,
   WebhookActionResult,
@@ -42,17 +56,17 @@ class MercadoPagoProviderService extends AbstractPaymentProvider<MercadoPagoOpti
    * Creates a Mercado Pago preference and returns the init_point URL.
    */
   async initiatePayment(
-    input: CreatePaymentProviderSession
-  ): Promise<PaymentProviderError | PaymentProviderSessionResponse> {
+    input: InitiatePaymentInput
+  ): Promise<InitiatePaymentOutput> {
     const { amount, currency_code, context } = input
 
     if (!this.accessToken) {
-      // If no access token configured, return a mock session for development
+      // No access token — return a mock session for development
       return {
+        id: `dev_session_${Date.now()}`,
+        status: "pending" as PaymentSessionStatus,
         data: {
-          id: `dev_session_${Date.now()}`,
-          status: "pending",
-          init_point: "/orden-confirmada", // Redirect to confirmation in dev
+          init_point: "/orden-confirmada",
           sandbox_init_point: "/orden-confirmada",
           _dev_mode: true,
         },
@@ -76,7 +90,7 @@ class MercadoPagoProviderService extends AbstractPaymentProvider<MercadoPagoOpti
           pending: `${process.env.STORE_CORS || "http://localhost:4321"}/checkout?status=pending`,
         },
         auto_return: "approved",
-        external_reference: context?.session_id || `order_${Date.now()}`,
+        external_reference: context?.idempotency_key || `order_${Date.now()}`,
         notification_url: `${process.env.MEDUSA_BACKEND_URL || "http://localhost:9000"}/store/webhooks/mercado-pago`,
       }
 
@@ -91,97 +105,92 @@ class MercadoPagoProviderService extends AbstractPaymentProvider<MercadoPagoOpti
 
       if (!response.ok) {
         const error = await response.json()
-        return {
-          error: error.message || "Failed to create Mercado Pago preference",
-          code: String(response.status),
-          detail: JSON.stringify(error),
-        }
+        throw new MedusaError(
+          MedusaError.Types.UNEXPECTED_STATE,
+          error.message || "Failed to create Mercado Pago preference"
+        )
       }
 
       const data = await response.json()
 
       return {
+        id: data.id as string,
+        status: "pending" as PaymentSessionStatus,
         data: {
-          id: data.id,
           init_point: data.init_point,
           sandbox_init_point: data.sandbox_init_point,
-          status: "pending",
         },
       }
     } catch (err: any) {
-      return {
-        error: err.message || "Mercado Pago connection error",
-        code: "MP_ERROR",
-        detail: err.message,
-      }
+      if (err instanceof MedusaError) throw err
+      throw new MedusaError(
+        MedusaError.Types.UNEXPECTED_STATE,
+        err.message || "Mercado Pago connection error"
+      )
     }
   }
 
   async authorizePayment(
-    paymentSessionData: Record<string, unknown>
-  ): Promise<PaymentProviderError | { status: PaymentSessionStatus; data: Record<string, unknown> }> {
-    return {
-      status: "authorized" as PaymentSessionStatus,
-      data: paymentSessionData,
-    }
+    _input: AuthorizePaymentInput
+  ): Promise<AuthorizePaymentOutput> {
+    return { status: "authorized" as PaymentSessionStatus }
   }
 
   async capturePayment(
-    paymentSessionData: Record<string, unknown>
-  ): Promise<PaymentProviderError | Record<string, unknown>> {
-    return paymentSessionData
+    _input: CapturePaymentInput
+  ): Promise<CapturePaymentOutput> {
+    return {}
   }
 
   async refundPayment(
-    paymentSessionData: Record<string, unknown>
-  ): Promise<PaymentProviderError | Record<string, unknown>> {
+    _input: RefundPaymentInput
+  ): Promise<RefundPaymentOutput> {
     // TODO: Implement refund via Mercado Pago API when needed
-    return paymentSessionData
+    return {}
   }
 
   async cancelPayment(
-    paymentSessionData: Record<string, unknown>
-  ): Promise<PaymentProviderError | Record<string, unknown>> {
-    return paymentSessionData
+    _input: CancelPaymentInput
+  ): Promise<CancelPaymentOutput> {
+    return {}
   }
 
   async deletePayment(
-    paymentSessionData: Record<string, unknown>
-  ): Promise<PaymentProviderError | Record<string, unknown>> {
-    return paymentSessionData
+    _input: DeletePaymentInput
+  ): Promise<DeletePaymentOutput> {
+    return {}
   }
 
   async getPaymentStatus(
-    paymentSessionData: Record<string, unknown>
-  ): Promise<PaymentSessionStatus> {
-    const status = paymentSessionData.status as string
+    input: GetPaymentStatusInput
+  ): Promise<GetPaymentStatusOutput> {
+    const status = (input.data?.status as string) ?? ""
     switch (status) {
       case "approved":
-        return "authorized" as PaymentSessionStatus
+        return { status: "authorized" as PaymentSessionStatus }
+      case "rejected":
+        return { status: "error" as PaymentSessionStatus }
       case "pending":
       case "in_process":
-        return "pending" as PaymentSessionStatus
-      case "rejected":
-        return "error" as PaymentSessionStatus
       default:
-        return "pending" as PaymentSessionStatus
+        return { status: "pending" as PaymentSessionStatus }
     }
   }
 
   async updatePayment(
-    input: UpdatePaymentProviderSession
-  ): Promise<PaymentProviderError | PaymentProviderSessionResponse> {
+    input: UpdatePaymentInput
+  ): Promise<UpdatePaymentOutput> {
     return { data: input.data }
   }
 
   async retrievePayment(
-    paymentSessionData: Record<string, unknown>
-  ): Promise<PaymentProviderError | Record<string, unknown>> {
-    return paymentSessionData
+    input: RetrievePaymentInput
+  ): Promise<RetrievePaymentOutput> {
+    return { data: input.data }
   }
 
   async getWebhookActionAndData(
-    payload: ProviderWebhookPayload
+    payload: ProviderWebhookPayload["payload"]
   ): Promise<WebhookActionResult> {
     const body = payload.data as any
 

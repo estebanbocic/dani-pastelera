@@ -1,15 +1,13 @@
 import type { SubscriberArgs, SubscriberConfig } from "@medusajs/framework"
+import { sendCustomerConfirmation, sendOwnerNotification } from "../lib/email"
 
 /**
  * Order Created Subscriber
  *
  * Triggered when a new order is placed.
- * Logs order details and prepares notification data.
- *
- * MVP: Logs to console. Will be extended with:
- * - Email to customer (order confirmation)
- * - Email to owner (new order notification)
- * - WhatsApp notification (future)
+ * - Logs order details to console
+ * - Sends confirmation email to customer
+ * - Sends notification email to owner
  */
 
 export default async function orderCreatedHandler({
@@ -51,10 +49,11 @@ export default async function orderCreatedHandler({
 
     // Log items with customizations
     for (const item of order.items || []) {
-      const meta = item.metadata as Record<string, any> || {}
-      logger.info(`   → ${item.title} (qty: ${item.quantity})`)
+      if (!item) continue
+      const meta = (item.metadata as Record<string, any>) ?? {}
+      logger.info(`   → ${item.title ?? ""} (qty: ${item.quantity ?? 0})`)
       if (meta.selected_options) {
-        for (const [key, value] of Object.entries(meta.selected_options)) {
+        for (const [key, value] of Object.entries(meta.selected_options as Record<string, unknown>)) {
           if (value) logger.info(`     • ${key}: ${value}`)
         }
       }
@@ -68,8 +67,12 @@ export default async function orderCreatedHandler({
       )
     }
 
-    // TODO: Send email to customer
-    // TODO: Send email/notification to owner
+    // Send emails (graceful — errors are caught inside helpers)
+    await Promise.all([
+      sendCustomerConfirmation(order as any, logger),
+      sendOwnerNotification(order as any, logger),
+    ])
+
     // TODO: WhatsApp notification (future)
 
   } catch (err: any) {

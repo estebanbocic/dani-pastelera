@@ -1,8 +1,8 @@
 import type { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
-import { Modules } from "@medusajs/framework/utils"
+import { addToCartWorkflow } from "@medusajs/medusa/core-flows"
 
 /**
- * POST /store/custom-cart/add-item
+ * POST /store/custom-cart
  *
  * Adds a configured product to the cart with the correct price
  * that includes customization extras (filling, coverage, decoration, etc.)
@@ -27,24 +27,21 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
   }
 
   try {
-    const cartService = req.scope.resolve(Modules.CART)
-
-    // Add line item with the configured unit_price
-    const lineItems = await cartService.addLineItems(cart_id, [
-      {
-        variant_id,
-        quantity,
-        unit_price,
-        metadata: metadata || {},
+    const { result } = await addToCartWorkflow(req.scope).run({
+      input: {
+        cart_id,
+        items: [
+          {
+            variant_id,
+            quantity,
+            unit_price,
+            metadata: metadata || {},
+          },
+        ],
       },
-    ])
-
-    // Fetch updated cart
-    const cart = await cartService.retrieveCart(cart_id, {
-      relations: ["items", "items.variant", "items.variant.product"],
     })
 
-    return res.status(200).json({ cart })
+    return res.status(200).json({ cart: result })
   } catch (err: any) {
     const logger = req.scope.resolve("logger")
     logger.error(`[Custom Cart] Error adding item: ${err.message}`)

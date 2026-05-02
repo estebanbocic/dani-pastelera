@@ -8,6 +8,7 @@ import {
 } from "../lib/medusa";
 import "../styles/global.css";
 import es from "../i18n/es.json";
+import { CartIconButton } from "../components/cart/CartIsland";
 
 let products: MedusaProduct[] = [];
 try {
@@ -27,11 +28,19 @@ try {
   <body class="bg-[#FFF8F0] text-[#3D3028] font-sans">
 
     <!-- Nav -->
-    <nav class="flex justify-between items-center px-6 py-4 bg-white shadow-sm">
-      <a href="/" class="text-[#8B6F47] font-bold text-lg no-underline">🧁 {es.site.name}</a>
+    <nav class="grid grid-cols-3 items-center px-6 py-4 bg-white shadow-sm">
+      <!-- Left: nav links -->
       <div class="flex gap-6">
         <a href="/" class="text-[#6B5B4E] text-sm no-underline hover:text-[#8B6F47]">Inicio</a>
         <a href="/productos" class="text-[#6B5B4E] text-sm no-underline hover:text-[#8B6F47]">Productos</a>
+      </div>
+      <!-- Center: logo -->
+      <a href="/" class="text-[#8B6F47] font-bold text-lg no-underline text-center">
+        🧁 {es.site.name}
+      </a>
+      <!-- Right: cart -->
+      <div class="flex justify-end">
+        <CartIconButton client:load />
       </div>
     </nav>
 
@@ -177,6 +186,21 @@ try {
             <li>📧 hola@danipastelera.cl</li>
             <li>📱 +56 9 XXXX XXXX</li>
             <li>📍 Santiago, Chile</li>
+            <li>
+              <a
+                href="https://www.instagram.com/danipastelera"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-2 text-[#d4c5b5] no-underline hover:text-white transition-colors"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+                  <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+                </svg>
+                @danipastelera
+              </a>
+            </li>
           </ul>
         </div>
       </div>

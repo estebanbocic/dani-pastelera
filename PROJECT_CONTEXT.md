@@ -104,7 +104,16 @@ dani-pastelera/
 - [x] Order confirmation page: /orden-confirmada with order details
 - [x] Chile (CLP) region created, EUR region removed
 
-**Next Phase: Phase 6 — Admin Operations**
+**Phase 6 — Admin Operations** (COMPLETED)
+
+### Phase 6 Completed
+- [x] Email notifications: customer order confirmation + owner alert via Resend (`src/lib/email.ts`, `src/templates/`)
+- [x] Order status workflow: custom statuses in `order.metadata.custom_status`, admin widget (`order-status.tsx`) with one-click status advancement
+- [x] Admin status API endpoint: `PUT /admin/orders/:id/status`
+- [x] MP webhook completed: captures payment and updates `custom_status` on approved/rejected
+- [x] Operational documentation: `docs/OPERATIONS.md`
+
+**Next Phase: Phase 7 — UX/UI Polish**
 
 ## Local Development
 
@@ -140,7 +149,7 @@ pnpm --filter @dani-pastelera/storefront dev   # port 4321
 | 3 | Product Configurator | COMPLETED |
 | 4 | Pricing Engine | COMPLETED (merged into Phase 3) |
 | 5 | Checkout & Mercado Pago | COMPLETED |
-| 6 | Admin Operations | Not Started |
+| 6 | Admin Operations | COMPLETED |
 | 7 | UX/UI Polish | Not Started |
 | 8 | Launch Preparation | Not Started |
 
@@ -174,10 +183,16 @@ pnpm --filter @dani-pastelera/storefront dev   # port 4321
 - `apps/storefront/src/components/CheckoutIsland.tsx` — Checkout form
 - `apps/storefront/src/components/OrderConfirmation.tsx` — Order confirmation
 - `apps/backend/src/modules/mercado-pago/` — Mercado Pago payment provider
-- `apps/backend/src/api/store/webhooks/mercado-pago/` — IPN webhook
+- `apps/backend/src/api/store/webhooks/mercado-pago/` — IPN webhook (captures payment on approval)
+- `apps/backend/src/lib/email.ts` — Resend email service (customer + owner notifications)
+- `apps/backend/src/templates/` — HTML email templates (order-confirmation, order-notification)
+- `apps/backend/src/api/admin/orders/[id]/status/` — Custom order status update endpoint
+- `apps/backend/src/admin/widgets/order-status.tsx` — Admin widget: status badge + one-click advancement
+- `docs/OPERATIONS.md` — Owner-facing operations guide
 
 ## Recent Changes
 
+- **2026-05-02:** Phase 6 completed. Email notifications (Resend), order status workflow + admin widget, MP webhook payment capture, OPERATIONS.md.
 - **2026-05-02:** Phase 5 completed. Homepage, cart, checkout, Mercado Pago provider, webhook, order confirmation.
 - **2026-05-01:** Phase 3 completed.
 
@@ -188,4 +203,4 @@ pnpm --filter @dani-pastelera/storefront dev   # port 4321
 
 ---
 
-*Last updated: 2026-05-01*
+*Last updated: 2026-05-02*
