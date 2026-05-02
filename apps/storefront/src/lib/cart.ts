@@ -178,6 +178,42 @@ export async function updateCartCustomer(
   return data.cart
 }
 
+export async function initPaymentCollection(
+  cartId: string
+): Promise<any> {
+  // Create payment collection for the cart
+  const res = await fetch(`${MEDUSA_URL}/store/payment-collections`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ cart_id: cartId }),
+  })
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}))
+    throw new Error(err.message || `Init payment collection failed: ${res.status}`)
+  }
+  const data = await res.json()
+  return data.payment_collection
+}
+
+export async function initPaymentSession(
+  paymentCollectionId: string,
+  providerId: string = "pp_system_default"
+): Promise<any> {
+  const res = await fetch(
+    `${MEDUSA_URL}/store/payment-collections/${paymentCollectionId}/payment-sessions`,
+    {
+      method: "POST",
+      headers,
+      body: JSON.stringify({ provider_id: providerId }),
+    }
+  )
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}))
+    throw new Error(err.message || `Init payment session failed: ${res.status}`)
+  }
+  return res.json()
+}
+
 export async function completeCart(
   cartId: string
 ): Promise<{ type: string; order?: any; cart?: Cart }> {

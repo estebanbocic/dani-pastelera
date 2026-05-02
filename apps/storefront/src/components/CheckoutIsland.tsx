@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react"
-import { getCart, getCartId, updateCartCustomer, completeCart, clearCartId, type Cart, type CartLineItem } from "../lib/cart"
+import { getCart, getCartId, updateCartCustomer, initPaymentCollection, initPaymentSession, completeCart, clearCartId, type Cart, type CartLineItem } from "../lib/cart"
 
 function formatCLP(amount: number): string {
   return new Intl.NumberFormat("es-CL", {
@@ -70,7 +70,11 @@ export default function CheckoutIsland() {
         delivery_info: deliveryInfo,
       })
 
-      // 2. Complete the cart → creates a Medusa order
+      // 2. Initialize payment collection + session
+      const paymentCollection = await initPaymentCollection(cart.id)
+      await initPaymentSession(paymentCollection.id)
+
+      // 3. Complete the cart → creates a Medusa order
       const result = await completeCart(cart.id)
 
       // 3. Store data for confirmation page
