@@ -92,7 +92,19 @@ dani-pastelera/
 - [x] Configurator renders as React island on product detail pages with schemas
 - [x] Seed script: `apps/backend/src/scripts/seed-configurator.ts`
 
-**Next Phase: Phase 5 — Checkout & Mercado Pago**
+**Phase 5 — Homepage, Cart, Checkout & Mercado Pago** (COMPLETED)
+
+### Phase 5 Completed
+- [x] Homepage: hero, dietary category cards, featured products, how it works, trust section, CTA, footer
+- [x] Cart: React context + localStorage cart ID, CartDrawer slide-out, Medusa Cart API integration
+- [x] Configurator wired to cart: adds to Medusa cart with full configuration metadata
+- [x] Checkout page: customer info, delivery/pickup, date, order summary, MP payment button
+- [x] Mercado Pago payment provider module (dev mode when no credentials)
+- [x] Webhook endpoint: POST /store/webhooks/mercado-pago (idempotent)
+- [x] Order confirmation page: /orden-confirmada with order details
+- [x] Chile (CLP) region created, EUR region removed
+
+**Next Phase: Phase 6 — Admin Operations**
 
 ## Local Development
 
@@ -127,7 +139,7 @@ pnpm --filter @dani-pastelera/storefront dev   # port 4321
 | 2 | Catalog Foundation | COMPLETED |
 | 3 | Product Configurator | COMPLETED |
 | 4 | Pricing Engine | COMPLETED (merged into Phase 3) |
-| 5 | Checkout & Mercado Pago | Not Started |
+| 5 | Checkout & Mercado Pago | COMPLETED |
 | 6 | Admin Operations | Not Started |
 | 7 | UX/UI Polish | Not Started |
 | 8 | Launch Preparation | Not Started |
@@ -157,10 +169,17 @@ pnpm --filter @dani-pastelera/storefront dev   # port 4321
 - `apps/backend/src/scripts/seed-configurator.ts` — Configurator schema seed
 - `apps/storefront/src/components/configurator/` — React configurator components
 - `apps/storefront/src/styles/global.css` — Tailwind v4 with bakery design tokens
+- `apps/storefront/src/lib/cart.ts` — Medusa Cart API client
+- `apps/storefront/src/components/cart/` — CartProvider, CartDrawer, CartIsland
+- `apps/storefront/src/components/CheckoutIsland.tsx` — Checkout form
+- `apps/storefront/src/components/OrderConfirmation.tsx` — Order confirmation
+- `apps/backend/src/modules/mercado-pago/` — Mercado Pago payment provider
+- `apps/backend/src/api/store/webhooks/mercado-pago/` — IPN webhook
 
 ## Recent Changes
 
-- **2026-05-01:** Phase 3 completed. Product configurator with step-by-step flow, live pricing, React islands. Pricing engine implemented.
+- **2026-05-02:** Phase 5 completed. Homepage, cart, checkout, Mercado Pago provider, webhook, order confirmation.
+- **2026-05-01:** Phase 3 completed.
 
 - **2026-05-01:** Phase 2 completed. 9 categories, 4 products with variants/dietary metadata. Product listing and detail pages on storefront. Publishable API key configured.
 - **2026-05-01:** Local dev environment running.
