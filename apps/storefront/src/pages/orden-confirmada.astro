@@ -1,0 +1,24 @@
+---
+import "../styles/global.css";
+import es from "../i18n/es.json";
+import OrderConfirmation from "../components/OrderConfirmation";
+---
+
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Pedido confirmado — {es.site.name}</title>
+  </head>
+  <body class="bg-[#FFF8F0] text-[#3D3028] font-sans min-h-screen">
+
+    <nav class="flex justify-between items-center px-6 py-4 bg-white shadow-sm">
+      <a href="/" class="text-[#8B6F47] font-bold text-lg no-underline">🧁 {es.site.name}</a>
+    </nav>
+
+    <div class="max-w-2xl mx-auto px-6 py-12">
+      <OrderConfirmation client:load />
+    </div>
+
+  </body>
+</html>
