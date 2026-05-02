@@ -13,13 +13,15 @@ export type LocalizedSlug = {
 // ─── Dietary & Allergen Tags ────────────────────────────────
 
 export type DietaryTag =
-  | "gluten_free"
   | "sugar_free"
+  | "keto"
   | "vegan"
   | "lactose_free"
-  | "celiac_friendly"
   | "diabetic_friendly"
   | "low_carb"
+  // Kept for backward compatibility — not displayed publicly
+  | "gluten_free"
+  | "celiac_friendly"
 
 export type AllergenTag =
   | "nuts"

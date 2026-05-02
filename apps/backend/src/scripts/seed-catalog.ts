@@ -31,15 +31,15 @@ export default async function seedCatalog({ container }: ExecArgs) {
   logger.info("📁 Creating product categories...")
 
   const categories = [
-    { name: "Sin Gluten", handle: "sin-gluten", description: "Productos libres de gluten, aptos para celíacos", is_active: true, is_internal: false, rank: 0 },
-    { name: "Sin Azúcar", handle: "sin-azucar", description: "Productos sin azúcar añadida, aptos para diabéticos", is_active: true, is_internal: false, rank: 1 },
-    { name: "Vegano", handle: "vegano", description: "Productos 100% veganos, sin ingredientes de origen animal", is_active: true, is_internal: false, rank: 2 },
-    { name: "Tortas", handle: "tortas", description: "Tortas para cumpleaños, celebraciones y eventos especiales", is_active: true, is_internal: false, rank: 3 },
-    { name: "Brownies", handle: "brownies", description: "Brownies artesanales en distintas versiones saludables", is_active: true, is_internal: false, rank: 4 },
-    { name: "Galletas", handle: "galletas", description: "Galletas artesanales para toda la familia", is_active: true, is_internal: false, rank: 5 },
-    { name: "Cupcakes", handle: "cupcakes", description: "Cupcakes decorados, perfectos para regalar", is_active: true, is_internal: false, rank: 6 },
-    { name: "Cajas de Regalo", handle: "cajas-de-regalo", description: "Cajas surtidas para regalar momentos dulces", is_active: true, is_internal: false, rank: 7 },
-    { name: "Tradicional", handle: "tradicional", description: "Pastelería tradicional con recetas clásicas", is_active: true, is_internal: false, rank: 8 },
+    { name: "Sin Azúcar",     handle: "sin-azucar",     description: "Productos sin azúcar añadida, endulzados naturalmente. Aptos para diabéticos.", is_active: true, is_internal: false, rank: 0 },
+    { name: "Keto",          handle: "keto",           description: "Bajo en carbohidratos, alto en grasas buenas. Para quienes siguen un estilo de vida keto.", is_active: true, is_internal: false, rank: 1 },
+    { name: "Vegano",        handle: "vegano",         description: "Productos 100% veganos, sin ingredientes de origen animal.", is_active: true, is_internal: false, rank: 2 },
+    { name: "Tortas",        handle: "tortas",         description: "Tortas para cumpleaños, celebraciones y eventos especiales.", is_active: true, is_internal: false, rank: 3 },
+    { name: "Brownies",      handle: "brownies",       description: "Brownies artesanales en distintas versiones saludables.", is_active: true, is_internal: false, rank: 4 },
+    { name: "Galletas",      handle: "galletas",       description: "Galletas artesanales para toda la familia.", is_active: true, is_internal: false, rank: 5 },
+    { name: "Cupcakes",      handle: "cupcakes",       description: "Cupcakes decorados, perfectos para regalar.", is_active: true, is_internal: false, rank: 6 },
+    { name: "Cajas de Regalo", handle: "cajas-de-regalo", description: "Cajas surtidas para regalar momentos dulces.", is_active: true, is_internal: false, rank: 7 },
+    { name: "Tradicional",   handle: "tradicional",    description: "Pastelería tradicional con recetas clásicas.", is_active: true, is_internal: false, rank: 8 },
   ]
 
   const { result: createdCategories } = await createProductCategoriesWorkflow(container).run({
@@ -98,16 +98,17 @@ export default async function seedCatalog({ container }: ExecArgs) {
     {
       title: "Torta Brownie Saludable",
       handle: "torta-brownie-saludable",
-      description: "Nuestra torta brownie insignia, preparada con ingredientes saludables y sin gluten. Perfecta para cumpleaños y celebraciones. Textura húmeda y sabor intenso a chocolate.",
+      description: "Nuestra torta brownie insignia, preparada con harina de almendras y endulzante natural. Keto y sin azúcar añadida. Perfecta para cumpleaños y celebraciones. Textura húmeda y sabor intenso a chocolate.",
       status: "published" as const,
       is_giftcard: false,
       categories: [
         { id: categoryMap.get("tortas")! },
-        { id: categoryMap.get("sin-gluten")! },
+        { id: categoryMap.get("keto")! },
+        { id: categoryMap.get("sin-azucar")! },
       ],
       sales_channels: [{ id: defaultSalesChannel.id }],
       metadata: {
-        dietary_tags: ["gluten_free", "celiac_friendly"],
+        dietary_tags: ["keto", "sugar_free"],
         allergen_tags: ["egg", "nuts"],
         preparation_time_days: 2,
       },
@@ -152,17 +153,17 @@ export default async function seedCatalog({ container }: ExecArgs) {
     {
       title: "Cheesecake Sin Azúcar",
       handle: "cheesecake-sin-azucar",
-      description: "Cheesecake cremoso endulzado con stevia y frutos naturales. Sin azúcar añadida, apto para diabéticos. Base de galleta sin gluten.",
+      description: "Cheesecake cremoso endulzado con stevia y frutos naturales. Sin azúcar añadida, apto para diabéticos. Base de galleta de almendras, bajo en carbs.",
       status: "published" as const,
       is_giftcard: false,
       categories: [
         { id: categoryMap.get("tortas")! },
         { id: categoryMap.get("sin-azucar")! },
-        { id: categoryMap.get("sin-gluten")! },
+        { id: categoryMap.get("keto")! },
       ],
       sales_channels: [{ id: defaultSalesChannel.id }],
       metadata: {
-        dietary_tags: ["sugar_free", "gluten_free", "diabetic_friendly", "celiac_friendly"],
+        dietary_tags: ["sugar_free", "keto", "diabetic_friendly"],
         allergen_tags: ["milk", "egg"],
         preparation_time_days: 2,
       },
@@ -235,18 +236,18 @@ export default async function seedCatalog({ container }: ExecArgs) {
       ],
     },
     {
-      title: "Galletas Sin Gluten Surtidas",
-      handle: "galletas-sin-gluten-surtidas",
-      description: "Mix de galletas artesanales sin gluten: chocolate chip, avena con pasas y mantequilla de maní. Crujientes por fuera, suaves por dentro.",
+      title: "Galletas Artesanales Keto",
+      handle: "galletas-artesanales-keto",
+      description: "Mix de galletas artesanales keto: chocolate chip con harina de almendras, coco con stevia y mantequilla de maní. Bajas en carbs, crujientes por fuera y suaves por dentro.",
       status: "published" as const,
       is_giftcard: false,
       categories: [
         { id: categoryMap.get("galletas")! },
-        { id: categoryMap.get("sin-gluten")! },
+        { id: categoryMap.get("keto")! },
       ],
       sales_channels: [{ id: defaultSalesChannel.id }],
       metadata: {
-        dietary_tags: ["gluten_free", "celiac_friendly"],
+        dietary_tags: ["keto", "sugar_free"],
         allergen_tags: ["egg", "milk", "peanuts", "nuts"],
         preparation_time_days: 1,
       },
@@ -256,7 +257,7 @@ export default async function seedCatalog({ container }: ExecArgs) {
       variants: [
         {
           title: "Bolsa de 6",
-          sku: "GSG-6",
+          sku: "GAK-6",
           manage_inventory: false,
           prices: [{ amount: 6990, currency_code: CURRENCY }],
           options: { "Cantidad": "Bolsa de 6" },
@@ -264,7 +265,7 @@ export default async function seedCatalog({ container }: ExecArgs) {
         },
         {
           title: "Bolsa de 12",
-          sku: "GSG-12",
+          sku: "GAK-12",
           manage_inventory: false,
           prices: [{ amount: 11990, currency_code: CURRENCY }],
           options: { "Cantidad": "Bolsa de 12" },
@@ -272,7 +273,7 @@ export default async function seedCatalog({ container }: ExecArgs) {
         },
         {
           title: "Caja regalo de 24",
-          sku: "GSG-24",
+          sku: "GAK-24",
           manage_inventory: false,
           prices: [{ amount: 19990, currency_code: CURRENCY }],
           options: { "Cantidad": "Caja regalo de 24" },

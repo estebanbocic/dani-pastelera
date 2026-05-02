@@ -16,11 +16,10 @@ const OPTION_LABELS: Record<string, string> = {
 }
 
 const DIETARY_LABELS: Record<string, string> = {
-  gluten_free: "Sin gluten",
   sugar_free: "Sin azúcar",
+  keto: "Keto",
   vegan: "Vegano",
   lactose_free: "Sin lactosa",
-  celiac_friendly: "Apto celíacos",
   diabetic_friendly: "Apto diabéticos",
   low_carb: "Bajo en carbohidratos",
 }

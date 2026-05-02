@@ -113,15 +113,17 @@ export function formatCLP(amount: number): string {
 
 // ─── Dietary tag helpers ──────────────────────────────────
 
+// Tags displayed publicly as badges on products
 const dietaryLabels: Record<string, { es: string; en: string; color: string }> =
   {
-    gluten_free: { es: "Sin gluten", en: "Gluten-free", color: "#A8B5A0" },
     sugar_free: { es: "Sin azúcar", en: "Sugar-free", color: "#E8A87C" },
-    vegan: { es: "Vegano", en: "Vegan", color: "#85B77B" },
-    lactose_free: { es: "Sin lactosa", en: "Lactose-free", color: "#96C5F7" },
-    celiac_friendly: { es: "Apto celíacos", en: "Celiac-friendly", color: "#C4A882" },
-    diabetic_friendly: { es: "Apto diabéticos", en: "Diabetic-friendly", color: "#D4A5A5" },
-    low_carb: { es: "Bajo en carbs", en: "Low carb", color: "#B5C7A3" },
+    keto:        { es: "Keto",       en: "Keto",        color: "#8B6F47" },
+    vegan:       { es: "Vegano",     en: "Vegan",       color: "#85B77B" },
+    lactose_free:     { es: "Sin lactosa",      en: "Lactose-free",      color: "#96C5F7" },
+    diabetic_friendly:{ es: "Apto diabéticos",  en: "Diabetic-friendly", color: "#D4A5A5" },
+    low_carb:         { es: "Bajo en carbs",    en: "Low carb",          color: "#B5C7A3" },
+    // Not displayed publicly — kept for backward compatibility only
+    // gluten_free / celiac_friendly are omitted intentionally
   }
 
 const allergenLabels: Record<string, { es: string; en: string }> = {

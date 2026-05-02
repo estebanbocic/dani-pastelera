@@ -11,11 +11,10 @@ import { DetailWidgetProps, AdminOrder } from "@medusajs/framework/types"
  */
 
 const dietaryLabels: Record<string, string> = {
-  gluten_free: "🌾 Sin gluten",
   sugar_free: "🍯 Sin azúcar",
+  keto: "🥑 Keto",
   vegan: "🌿 Vegano",
   lactose_free: "🥛 Sin lactosa",
-  celiac_friendly: "✅ Apto celíacos",
   diabetic_friendly: "✅ Apto diabéticos",
   low_carb: "📉 Bajo en carbs",
 }

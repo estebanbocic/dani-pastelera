@@ -29,11 +29,10 @@ const ALLERGEN_LABELS: Record<string, string> = {
 }
 
 const DIETARY_LABELS: Record<string, string> = {
-  gluten_free: "Sin gluten",
   sugar_free: "Sin azúcar",
+  keto: "Keto",
   vegan: "Vegano",
   lactose_free: "Sin lactosa",
-  celiac_friendly: "Apto celíacos",
   diabetic_friendly: "Apto diabéticos",
   low_carb: "Bajo en carbohidratos",
 }
@@ -74,8 +73,8 @@ export function buildOwnerNotificationHtml(order: OrderEmailData): string {
       }
 
       const alertTags: string[] = []
-      if (dietaryTags.includes("gluten_free") || dietaryTags.includes("celiac_friendly")) {
-        alertTags.push('<span style="background:#fff3e0;color:#e65100;font-size:11px;padding:2px 8px;border-radius:12px;margin:2px;display:inline-block;">⚠️ SIN GLUTEN</span>')
+      if (dietaryTags.includes("keto")) {
+        alertTags.push('<span style="background:#f3f0e8;color:#5c3317;font-size:11px;padding:2px 8px;border-radius:12px;margin:2px;display:inline-block;">🥑 KETO</span>')
       }
       if (dietaryTags.includes("vegan")) {
         alertTags.push('<span style="background:#e8f5e9;color:#2e7d32;font-size:11px;padding:2px 8px;border-radius:12px;margin:2px;display:inline-block;">🌿 VEGANO</span>')
