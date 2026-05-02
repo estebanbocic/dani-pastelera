@@ -8,7 +8,7 @@ import {
   type MedusaProduct,
 } from "../../lib/medusa";
 import es from "../../i18n/es.json";
-import ProductConfigurator from "../../components/configurator/ProductConfigurator";
+import ProductPageIsland from "../../components/ProductPageIsland";
 import "../../styles/global.css";
 
 export async function getStaticPaths() {
@@ -258,7 +258,7 @@ const variantData = product?.variants?.map((v) => {
           )}
 
           {customizationSchema ? (
-            <ProductConfigurator
+            <ProductPageIsland
               client:load
               productTitle={product.title}
               schema={customizationSchema}

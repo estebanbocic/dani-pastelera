@@ -1,149 +1,189 @@
 ---
+import {
+  getProducts,
+  getLowestPrice,
+  formatCLP,
+  getDietaryLabel,
+  type MedusaProduct,
+} from "../lib/medusa";
+import "../styles/global.css";
 import es from "../i18n/es.json";
 
-const MEDUSA_URL = import.meta.env.PUBLIC_MEDUSA_BACKEND_URL || "http://localhost:9000";
-
-let storeInfo = null;
-let products: any[] = [];
-let connectionOk = false;
-
+let products: MedusaProduct[] = [];
 try {
-  const storeRes = await fetch(`${MEDUSA_URL}/store/products`, {
-    headers: { "Content-Type": "application/json" },
-  });
-  if (storeRes.ok) {
-    const data = await storeRes.json();
-    products = data.products || [];
-    connectionOk = true;
-  }
-} catch (e) {
-  // Backend not reachable
-}
+  const data = await getProducts({ limit: 4 });
+  products = data.products;
+} catch {}
 ---
 
 <html lang="es">
   <head>
     <meta charset="utf-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width" />
-    <meta name="generator" content={Astro.generator} />
+    <meta name="description" content="Pastelería saludable, hecha con cariño. Tortas y dulces sin gluten, sin azúcar y veganos." />
     <title>{es.site.name} — {es.site.tagline}</title>
-    <style>
-      :root {
-        --color-cream: #FFF8F0;
-        --color-warm-brown: #8B6F47;
-        --color-soft-pink: #F5D5CB;
-        --color-sage: #A8B5A0;
-        --color-text: #3D3028;
-        --color-text-light: #6B5B4E;
-      }
-      * { margin: 0; padding: 0; box-sizing: border-box; }
-      body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        background: var(--color-cream);
-        color: var(--color-text);
-        min-height: 100vh;
-      }
-      .hero {
-        text-align: center;
-        padding: 4rem 1.5rem;
-        background: linear-gradient(135deg, var(--color-soft-pink) 0%, var(--color-cream) 100%);
-      }
-      .hero h1 {
-        font-size: 2.5rem;
-        color: var(--color-warm-brown);
-        margin-bottom: 0.5rem;
-      }
-      .hero p {
-        font-size: 1.2rem;
-        color: var(--color-text-light);
-        max-width: 500px;
-        margin: 0 auto;
-      }
-      .status {
-        text-align: center;
-        padding: 2rem 1.5rem;
-      }
-      .badge {
-        display: inline-block;
-        padding: 0.4rem 1rem;
-        border-radius: 999px;
-        font-size: 0.85rem;
-        font-weight: 600;
-      }
-      .badge-ok { background: #d4edda; color: #155724; }
-      .badge-err { background: #f8d7da; color: #721c24; }
-      .info {
-        max-width: 600px;
-        margin: 2rem auto;
-        padding: 1.5rem;
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-      }
-      .info h2 { color: var(--color-warm-brown); margin-bottom: 1rem; font-size: 1.3rem; }
-      .info ul { list-style: none; }
-      .info li { padding: 0.4rem 0; color: var(--color-text-light); }
-      .info li::before { content: "✓ "; color: var(--color-sage); font-weight: bold; }
-      .products { max-width: 600px; margin: 1rem auto; padding: 0 1.5rem; }
-      .products h2 { color: var(--color-warm-brown); margin-bottom: 1rem; }
-      .product-card {
-        background: white;
-        border-radius: 12px;
-        padding: 1rem 1.5rem;
-        margin-bottom: 0.75rem;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-      }
-      .product-card h3 { font-size: 1rem; color: var(--color-text); }
-      .product-card p { font-size: 0.85rem; color: var(--color-text-light); }
-      footer {
-        text-align: center;
-        padding: 2rem;
-        color: var(--color-text-light);
-        font-size: 0.85rem;
-      }
-    </style>
   </head>
-  <body>
-    <section class="hero">
-      <h1>🧁 {es.site.name}</h1>
-      <p>{es.site.tagline}</p>
+  <body class="bg-[#FFF8F0] text-[#3D3028] font-sans">
+
+    <!-- Nav -->
+    <nav class="flex justify-between items-center px-6 py-4 bg-white shadow-sm">
+      <a href="/" class="text-[#8B6F47] font-bold text-lg no-underline">🧁 {es.site.name}</a>
+      <div class="flex gap-6">
+        <a href="/" class="text-[#6B5B4E] text-sm no-underline hover:text-[#8B6F47]">Inicio</a>
+        <a href="/productos" class="text-[#6B5B4E] text-sm no-underline hover:text-[#8B6F47]">Productos</a>
+      </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="bg-gradient-to-br from-[#F5D5CB] to-[#FFF8F0] px-6 py-20 md:py-28 text-center">
+      <h1 class="text-4xl md:text-5xl font-bold text-[#8B6F47] mb-4 leading-tight">
+        Pastelería saludable,<br/>hecha con cariño
+      </h1>
+      <p class="text-lg text-[#6B5B4E] max-w-xl mx-auto mb-8">
+        Tortas y dulces sin gluten, sin azúcar y veganos, preparados a pedido para que todos puedan disfrutar.
+      </p>
+      <a href="/productos" class="inline-block px-8 py-3 bg-[#8B6F47] text-white rounded-xl font-semibold text-base hover:bg-[#7A5F3D] transition-colors no-underline">
+        Ver productos
+      </a>
     </section>
 
-    <section class="status">
-      {connectionOk ? (
-        <span class="badge badge-ok">✓ Backend conectado — {MEDUSA_URL}</span>
-      ) : (
-        <span class="badge badge-err">✗ Backend no disponible — {MEDUSA_URL}</span>
-      )}
+    <!-- Dietary Category Cards -->
+    <section class="max-w-5xl mx-auto px-6 py-16">
+      <h2 class="text-2xl font-bold text-[#8B6F47] text-center mb-10">Pastelería para todos</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <a href="/productos?cat=sin-gluten" class="group block bg-white rounded-2xl p-8 text-center shadow-sm hover:shadow-md transition-shadow no-underline">
+          <div class="text-4xl mb-4">🌾</div>
+          <h3 class="text-lg font-bold text-[#3D3028] mb-2 group-hover:text-[#8B6F47]">Sin Gluten</h3>
+          <p class="text-sm text-[#6B5B4E]">Productos libres de gluten, aptos para celíacos. Sabor sin restricciones.</p>
+        </a>
+        <a href="/productos?cat=sin-azucar" class="group block bg-white rounded-2xl p-8 text-center shadow-sm hover:shadow-md transition-shadow no-underline">
+          <div class="text-4xl mb-4">🍯</div>
+          <h3 class="text-lg font-bold text-[#3D3028] mb-2 group-hover:text-[#8B6F47]">Sin Azúcar</h3>
+          <p class="text-sm text-[#6B5B4E]">Endulzados naturalmente, aptos para diabéticos. Dulce sin culpa.</p>
+        </a>
+        <a href="/productos?cat=vegano" class="group block bg-white rounded-2xl p-8 text-center shadow-sm hover:shadow-md transition-shadow no-underline">
+          <div class="text-4xl mb-4">🌿</div>
+          <h3 class="text-lg font-bold text-[#3D3028] mb-2 group-hover:text-[#8B6F47]">Vegano</h3>
+          <p class="text-sm text-[#6B5B4E]">100% libre de ingredientes animales. Delicioso y consciente.</p>
+        </a>
+      </div>
     </section>
 
-    <div class="info">
-      <h2>MVP Local — Estado</h2>
-      <ul>
-        <li>Medusa.js v2 backend en puerto 9000</li>
-        <li>Astro storefront en puerto 4321</li>
-        <li>PostgreSQL conectado</li>
-        <li>Redis conectado</li>
-        <li>Admin: <a href="http://localhost:9000/app">http://localhost:9000/app</a></li>
-      </ul>
-    </div>
-
+    <!-- Featured Products -->
     {products.length > 0 && (
-      <section class="products">
-        <h2>Productos ({products.length})</h2>
-        {products.map((p: any) => (
-          <div class="product-card">
-            <h3>{p.title}</h3>
-            {p.description && <p>{p.description}</p>}
+      <section class="bg-white py-16">
+        <div class="max-w-5xl mx-auto px-6">
+          <h2 class="text-2xl font-bold text-[#8B6F47] text-center mb-10">Los más pedidos</h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {products.map((product) => {
+              const dietaryTags: string[] = product.metadata?.dietary_tags || [];
+              const lowestPrice = getLowestPrice(product);
+              return (
+                <a href={`/productos/${product.handle}`} class="block bg-[#FFF8F0] rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all hover:-translate-y-1 no-underline">
+                  <div class="h-44 bg-gradient-to-br from-[#F5D5CB] to-[#f0e6dd] flex items-center justify-center text-5xl">🧁</div>
+                  <div class="p-4">
+                    <h3 class="font-semibold text-sm text-[#3D3028] mb-1">{product.title}</h3>
+                    {dietaryTags.length > 0 && (
+                      <div class="flex flex-wrap gap-1 mb-2">
+                        {dietaryTags.slice(0, 2).map((tag: string) => {
+                          const { label, color } = getDietaryLabel(tag);
+                          return <span class="text-[0.65rem] font-semibold text-white px-2 py-0.5 rounded-full" style={`background:${color}`}>{label}</span>;
+                        })}
+                      </div>
+                    )}
+                    {lowestPrice != null && (
+                      <p class="text-[#8B6F47] font-bold"><span class="text-xs font-normal text-[#6B5B4E]">Desde </span>{formatCLP(lowestPrice)}</p>
+                    )}
+                  </div>
+                </a>
+              );
+            })}
           </div>
-        ))}
+          <div class="text-center mt-8">
+            <a href="/productos" class="text-[#8B6F47] font-semibold text-sm hover:underline no-underline">Ver todos los productos →</a>
+          </div>
+        </div>
       </section>
     )}
 
-    <footer>
-      <p>&copy; 2026 Dani Pastelera — Pastelería saludable, hecha con cariño</p>
+    <!-- How It Works -->
+    <section class="max-w-4xl mx-auto px-6 py-16">
+      <h2 class="text-2xl font-bold text-[#8B6F47] text-center mb-10">¿Cómo funciona?</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+        <div>
+          <div class="w-14 h-14 mx-auto mb-4 rounded-full bg-[#F5D5CB] flex items-center justify-center text-2xl">1</div>
+          <h3 class="font-bold text-[#3D3028] mb-2">Elige tu producto</h3>
+          <p class="text-sm text-[#6B5B4E]">Explora nuestro catálogo de tortas, cupcakes, galletas y más.</p>
+        </div>
+        <div>
+          <div class="w-14 h-14 mx-auto mb-4 rounded-full bg-[#F5D5CB] flex items-center justify-center text-2xl">2</div>
+          <h3 class="font-bold text-[#3D3028] mb-2">Personaliza a tu gusto</h3>
+          <p class="text-sm text-[#6B5B4E]">Elige tamaño, relleno, cobertura, decoración y mensaje personalizado.</p>
+        </div>
+        <div>
+          <div class="w-14 h-14 mx-auto mb-4 rounded-full bg-[#F5D5CB] flex items-center justify-center text-2xl">3</div>
+          <h3 class="font-bold text-[#3D3028] mb-2">Recíbelo en tu puerta</h3>
+          <p class="text-sm text-[#6B5B4E]">Elige tu fecha de entrega y recibe tu pedido preparado con cariño.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Trust Section -->
+    <section class="bg-white py-16">
+      <div class="max-w-4xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+        <div>
+          <div class="text-3xl mb-3">🌱</div>
+          <h3 class="font-bold text-[#3D3028] mb-2">Ingredientes de selección</h3>
+          <p class="text-sm text-[#6B5B4E]">Trabajamos con los mejores ingredientes naturales. Sin premezclas, sin aditivos artificiales.</p>
+        </div>
+        <div>
+          <div class="text-3xl mb-3">🤲</div>
+          <h3 class="font-bold text-[#3D3028] mb-2">Hecho a mano con amor</h3>
+          <p class="text-sm text-[#6B5B4E]">Cada producto es preparado artesanalmente a pedido. Frescura garantizada.</p>
+        </div>
+        <div>
+          <div class="text-3xl mb-3">💚</div>
+          <h3 class="font-bold text-[#3D3028] mb-2">Opciones para todos</h3>
+          <p class="text-sm text-[#6B5B4E]">Sin gluten, sin azúcar, vegano. Para que nadie se quede sin disfrutar.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="px-6 py-16 text-center">
+      <h2 class="text-2xl md:text-3xl font-bold text-[#8B6F47] mb-4">¿Lista para endulzar tu día?</h2>
+      <p class="text-[#6B5B4E] mb-8 max-w-md mx-auto">Haz tu pedido con al menos 48 horas de anticipación y recíbelo preparado especialmente para ti.</p>
+      <a href="/productos" class="inline-block px-8 py-3 bg-[#8B6F47] text-white rounded-xl font-semibold text-base hover:bg-[#7A5F3D] transition-colors no-underline">Ver productos</a>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-[#3D3028] text-[#d4c5b5] py-12">
+      <div class="max-w-5xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div>
+          <h3 class="text-white font-bold text-lg mb-3">🧁 {es.site.name}</h3>
+          <p class="text-sm">Pastelería saludable, hecha con cariño. Tortas y dulces sin gluten, sin azúcar y veganos.</p>
+        </div>
+        <div>
+          <h4 class="text-white font-semibold mb-3">Navegación</h4>
+          <ul class="space-y-2 text-sm list-none p-0">
+            <li><a href="/" class="text-[#d4c5b5] no-underline hover:text-white">Inicio</a></li>
+            <li><a href="/productos" class="text-[#d4c5b5] no-underline hover:text-white">Productos</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-white font-semibold mb-3">Contacto</h4>
+          <ul class="space-y-2 text-sm list-none p-0">
+            <li>📧 hola@danipastelera.cl</li>
+            <li>📱 +56 9 XXXX XXXX</li>
+            <li>📍 Santiago, Chile</li>
+          </ul>
+        </div>
+      </div>
+      <div class="max-w-5xl mx-auto px-6 mt-8 pt-6 border-t border-[#5a4d42] text-center text-xs text-[#9a8b7d]">
+        &copy; 2026 Dani Pastelera — Todos los derechos reservados
+      </div>
     </footer>
+
   </body>
 </html>

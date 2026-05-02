@@ -14,6 +14,7 @@ type Props = {
   schema: CustomizationSchema
   variants: VariantInfo[]
   initialVariantId?: string
+  onAddToCart?: (variantId: string, quantity: number, metadata: Record<string, any>) => Promise<void>
 }
 
 function formatCLP(amount: number): string {
@@ -72,7 +73,9 @@ function calculatePrice(
   }
 }
 
-export default function ProductConfigurator({ productTitle, schema, variants, initialVariantId }: Props) {
+export default function ProductConfigurator({ productTitle, schema, variants, initialVariantId, onAddToCart }: Props) {
+  const [addingToCart, setAddingToCart] = useState(false)
+  const [addedToCart, setAddedToCart] = useState(false)
   const [selectedVariantId, setSelectedVariantId] = useState(initialVariantId || variants[0]?.id || "")
   const [currentStep, setCurrentStep] = useState(0)
   const [selections, setSelections] = useState<Record<string, string | undefined>>(() => {
@@ -257,12 +260,30 @@ export default function ProductConfigurator({ productTitle, schema, variants, in
           </button>
         ) : (
           <button
-            onClick={() => {
-              alert(`🛒 Agregar al carrito:\n${productTitle} — ${selectedVariant.title}\nTotal: ${formatCLP(pricing.totalAmount)}\n\n(Cart integration coming in Phase 5)`)
+            disabled={addingToCart}
+            onClick={async () => {
+              if (onAddToCart) {
+                setAddingToCart(true)
+                try {
+                  await onAddToCart(selectedVariantId, 1, {
+                    selected_options: selections,
+                    price_breakdown: pricing.breakdown,
+                    total_amount: pricing.totalAmount,
+                  })
+                  setAddedToCart(true)
+                  setTimeout(() => setAddedToCart(false), 3000)
+                } finally {
+                  setAddingToCart(false)
+                }
+              } else {
+                alert(`🛒 ${productTitle} — ${selectedVariant.title}\nTotal: ${formatCLP(pricing.totalAmount)}`)
+              }
             }}
-            className="flex-1 py-3 rounded-xl bg-[#8B6F47] text-white text-sm font-bold hover:bg-[#7A5F3D] transition-colors"
+            className={`flex-1 py-3 rounded-xl text-white text-sm font-bold transition-colors ${
+              addedToCart ? "bg-green-600" : "bg-[#8B6F47] hover:bg-[#7A5F3D]"
+            }`}
           >
-            🛒 Agregar al carrito — {formatCLP(pricing.totalAmount)}
+            {addingToCart ? "Agregando..." : addedToCart ? "✓ Agregado al carrito" : `🛒 Agregar al carrito — ${formatCLP(pricing.totalAmount)}`}
           </button>
         )}
       </div>
