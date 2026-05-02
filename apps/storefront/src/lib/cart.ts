@@ -146,7 +146,7 @@ export async function removeLineItem(
   return data.cart
 }
 
-// ─── Helper: ensure cart exists ──────────────────────────
+// ─── Helper: ensure cart exists ──────────────────────
 
 export async function ensureCart(regionId?: string): Promise<Cart> {
   const existingId = getCartId()
@@ -156,4 +156,38 @@ export async function ensureCart(regionId?: string): Promise<Cart> {
   }
   // Create new cart
   return createCart(regionId)
+}
+
+// ─── Checkout: update cart + complete order ───────────
+
+export async function updateCartCustomer(
+  cartId: string,
+  email: string,
+  metadata?: Record<string, any>
+): Promise<Cart> {
+  const body: any = { email }
+  if (metadata) body.metadata = metadata
+
+  const res = await fetch(`${MEDUSA_URL}/store/carts/${cartId}`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(body),
+  })
+  if (!res.ok) throw new Error(`Update cart failed: ${res.status}`)
+  const data = await res.json()
+  return data.cart
+}
+
+export async function completeCart(
+  cartId: string
+): Promise<{ type: string; order?: any; cart?: Cart }> {
+  const res = await fetch(`${MEDUSA_URL}/store/carts/${cartId}/complete`, {
+    method: "POST",
+    headers,
+  })
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}))
+    throw new Error(err.message || `Complete cart failed: ${res.status}`)
+  }
+  return res.json()
 }

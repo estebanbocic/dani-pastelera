@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react"
-import { getCart, getCartId, type Cart, type CartLineItem } from "../lib/cart"
+import { getCart, getCartId, updateCartCustomer, completeCart, clearCartId, type Cart, type CartLineItem } from "../lib/cart"
 
 function formatCLP(amount: number): string {
   return new Intl.NumberFormat("es-CL", {
@@ -52,35 +52,44 @@ export default function CheckoutIsland() {
 
     setSubmitting(true)
     try {
-      // For now, store checkout data and redirect to a confirmation
-      // Mercado Pago integration will be wired here when credentials are provided
-      const checkoutData = {
-        cartId: cart.id,
-        customer: { name, email, phone },
-        delivery: {
-          method: deliveryMethod,
-          address: deliveryMethod === "delivery" ? address : undefined,
-          commune: deliveryMethod === "delivery" ? commune : undefined,
-          date: deliveryDate,
-          notes,
-        },
+      const deliveryInfo = {
+        method: deliveryMethod,
+        address: deliveryMethod === "delivery" ? address : undefined,
+        commune: deliveryMethod === "delivery" ? commune : undefined,
+        date: deliveryDate,
+        notes: notes || undefined,
       }
 
-      // Store checkout data for confirmation page
+      // 1. Update cart with customer email and delivery metadata
+      await updateCartCustomer(cart.id, email, {
+        customer_name: name,
+        customer_phone: phone,
+        delivery_info: deliveryInfo,
+      })
+
+      // 2. Complete the cart → creates a Medusa order
+      const result = await completeCart(cart.id)
+
+      // 3. Store data for confirmation page
+      const checkoutData = {
+        cartId: cart.id,
+        orderId: result.order?.id,
+        orderDisplayId: result.order?.display_id,
+        customer: { name, email, phone },
+        delivery: deliveryInfo,
+      }
       sessionStorage.setItem("dani_checkout_data", JSON.stringify(checkoutData))
       sessionStorage.setItem("dani_checkout_cart", JSON.stringify(cart))
 
-      // TODO: When Mercado Pago is configured:
-      // 1. Update cart with customer info via Medusa API
-      // 2. Create payment session
-      // 3. Get Mercado Pago preference URL
-      // 4. Redirect to Mercado Pago
+      // 4. Clear cart ID (order is now created)
+      clearCartId()
 
-      // For now, go directly to confirmation
+      // 5. Redirect to confirmation
+      // TODO: When Mercado Pago is configured, redirect to MP payment URL instead
       window.location.href = "/orden-confirmada"
-    } catch (err) {
+    } catch (err: any) {
       console.error("Checkout error:", err)
-      alert("Error al procesar el pedido. Por favor intenta de nuevo.")
+      alert(err.message || "Error al procesar el pedido. Por favor intenta de nuevo.")
     } finally {
       setSubmitting(false)
     }

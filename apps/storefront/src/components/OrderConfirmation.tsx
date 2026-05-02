@@ -46,6 +46,11 @@ export default function OrderConfirmation() {
       <h1 className="text-3xl font-bold text-[#8B6F47] mb-2">
         ¡Gracias por tu pedido!
       </h1>
+      {checkoutData.orderDisplayId && (
+        <p className="text-lg font-semibold text-[#3D3028] mb-2">
+          Pedido #{checkoutData.orderDisplayId}
+        </p>
+      )}
       <p className="text-[#6B5B4E] mb-8">
         Recibimos tu compra y comenzaremos a prepararla según la fecha seleccionada.
       </p>
