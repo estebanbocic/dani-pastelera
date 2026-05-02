@@ -44,7 +44,10 @@ export default function CheckoutIsland() {
   }, [])
 
   const items = cart?.items || []
-  const subtotal = cart?.subtotal || cart?.item_total || 0
+  const subtotal = items.reduce(
+    (sum, item) => sum + ((item.metadata?.total_amount as number) || item.unit_price * item.quantity),
+    0
+  )
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -138,7 +141,7 @@ export default function CheckoutIsland() {
                 )}
               </div>
               <span className="font-bold text-[#8B6F47] text-sm ml-4">
-                {formatCLP(item.unit_price * item.quantity)}
+                {formatCLP((item.metadata?.total_amount as number) || item.unit_price * item.quantity)}
               </span>
             </div>
           ))}
