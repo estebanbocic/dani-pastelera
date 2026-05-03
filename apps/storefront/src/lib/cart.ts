@@ -45,6 +45,7 @@ export type CartLineItem = {
       title: string
       handle: string
       thumbnail: string | null
+      metadata?: Record<string, any> | null
     }
   }
 }
@@ -79,7 +80,8 @@ export async function createCart(regionId?: string): Promise<Cart> {
 export async function getCart(cartId: string): Promise<Cart | null> {
   try {
     // Request expanded relations so CartDrawer always has variant/product data
-    const fields = "*items,*items.variant,*items.variant.product"
+    // +items.variant.product.metadata needed for preparation_time_days in checkout
+    const fields = "*items,*items.variant,*items.variant.product,+items.variant.product.metadata"
     const res = await fetch(
       `${MEDUSA_URL}/store/carts/${cartId}?fields=${encodeURIComponent(fields)}`,
       { headers }

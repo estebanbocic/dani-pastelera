@@ -150,13 +150,6 @@ export default async function seedConfigurator({ container }: ExecArgs) {
           },
         ],
       },
-      {
-        id: "delivery_date",
-        label: { es: "Fecha de entrega", en: "Delivery date" },
-        description: { es: "Mínimo 2 días de anticipación", en: "Minimum 2 days in advance" },
-        type: "date",
-        required: true,
-      },
     ],
     compatibilityRules: [
       {
@@ -232,13 +225,6 @@ export default async function seedConfigurator({ container }: ExecArgs) {
               isActive: true,
             },
           ],
-        },
-        {
-          id: "delivery_date",
-          label: { es: "Fecha de entrega", en: "Delivery date" },
-          description: { es: "Mínimo 2 días de anticipación", en: "Minimum 2 days in advance" },
-          type: "date",
-          required: true,
         },
       ],
       compatibilityRules: [],

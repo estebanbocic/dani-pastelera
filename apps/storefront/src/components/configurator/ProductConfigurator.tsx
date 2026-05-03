@@ -90,7 +90,8 @@ export default function ProductConfigurator({ productTitle, schema, variants, in
   })
 
   const selectedVariant = variants.find((v) => v.id === selectedVariantId) || variants[0]
-  const steps = schema.steps
+  // Date steps are removed — delivery date is chosen once in checkout
+  const steps = schema.steps.filter((s) => s.type !== "date")
 
   // Compute disabled options from compatibility rules
   const disabledOptionIds = useMemo(() => {
@@ -118,16 +119,6 @@ export default function ProductConfigurator({ productTitle, schema, variants, in
   const handleTextChange = (stepId: string, value: string) => {
     setSelections((prev) => ({ ...prev, [stepId]: value }))
   }
-
-  const handleDateChange = (stepId: string, value: string) => {
-    setSelections((prev) => ({ ...prev, [stepId]: value }))
-  }
-
-  const minDate = useMemo(() => {
-    const d = new Date()
-    d.setDate(d.getDate() + 2)
-    return d.toISOString().split("T")[0]
-  }, [])
 
   const isLastStep = currentStep === steps.length - 1
   const step = steps[currentStep]
@@ -222,16 +213,6 @@ export default function ProductConfigurator({ productTitle, schema, variants, in
           </div>
         )}
 
-        {/* Date picker */}
-        {step.type === "date" && (
-          <input
-            type="date"
-            min={minDate}
-            value={selections[step.id] || ""}
-            onChange={(e) => handleDateChange(step.id, e.target.value)}
-            className="w-full p-3 border-2 border-gray-200 rounded-xl text-sm focus:border-[#8B6F47] focus:outline-none"
-          />
-        )}
       </div>
 
       {/* Price breakdown */}

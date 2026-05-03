@@ -1,6 +1,36 @@
 import { useState, useEffect, useMemo } from "react"
 import { getCart, getCartId, updateCartCustomer, initPaymentCollection, initPaymentSession, completeCart, clearCartId, type Cart, type CartLineItem } from "../lib/cart"
 
+/**
+ * Adds N business days (Mon–Sat) to a date.
+ * Sundays are skipped since no deliveries happen on Sundays.
+ */
+function addBusinessDays(start: Date, days: number): Date {
+  const d = new Date(start)
+  let added = 0
+  while (added < days) {
+    d.setDate(d.getDate() + 1)
+    if (d.getDay() !== 0) added++ // skip Sundays (0)
+  }
+  // If we land on Sunday, move to Monday
+  if (d.getDay() === 0) d.setDate(d.getDate() + 1)
+  return d
+}
+
+/** Returns true if the ISO date string falls on a Sunday. */
+function isSunday(dateStr: string): boolean {
+  if (!dateStr) return false
+  // Use noon to avoid timezone edge cases
+  return new Date(dateStr + "T12:00:00").getDay() === 0
+}
+
+/** Advances a Sunday date string to the following Monday. */
+function nextMonday(dateStr: string): string {
+  const d = new Date(dateStr + "T12:00:00")
+  d.setDate(d.getDate() + 1)
+  return d.toISOString().split("T")[0]
+}
+
 function formatCLP(amount: number): string {
   return new Intl.NumberFormat("es-CL", {
     style: "currency",
@@ -22,13 +52,8 @@ export default function CheckoutIsland() {
   const [address, setAddress] = useState("")
   const [commune, setCommune] = useState("")
   const [deliveryDate, setDeliveryDate] = useState("")
+  const [dateError, setDateError] = useState<string | null>(null)
   const [notes, setNotes] = useState("")
-
-  const minDate = useMemo(() => {
-    const d = new Date()
-    d.setDate(d.getDate() + 2)
-    return d.toISOString().split("T")[0]
-  }, [])
 
   // Load cart
   useEffect(() => {
@@ -45,6 +70,33 @@ export default function CheckoutIsland() {
 
   const items = cart?.items || []
   const subtotal = cart?.total || cart?.subtotal || 0
+
+  // Max preparation days across all cart items (in business days, Mon–Sat)
+  const maxPrepDays = useMemo(() => {
+    if (items.length === 0) return 2
+    return Math.max(
+      ...items.map((item) => {
+        const prep = (item.variant?.product?.metadata as any)?.preparation_time_days
+        return typeof prep === "number" ? prep : 2
+      })
+    )
+  }, [items])
+
+  const minDate = useMemo(() => {
+    return addBusinessDays(new Date(), maxPrepDays).toISOString().split("T")[0]
+  }, [maxPrepDays])
+
+  const handleDateChange = (value: string) => {
+    setDateError(null)
+    if (isSunday(value)) {
+      // Auto-advance to Monday and show a notice
+      const monday = nextMonday(value)
+      setDeliveryDate(monday)
+      setDateError("📅 No realizamos entregas los domingos. Te asignamos el lunes siguiente.")
+    } else {
+      setDeliveryDate(value)
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -133,8 +185,9 @@ export default function CheckoutIsland() {
                 <p className="text-xs text-[#6B5B4E]">{item.variant?.title}</p>
                 {item.metadata?.selected_options && (
                   <div className="mt-1">
-                    {Object.entries(item.metadata.selected_options as Record<string, string>).map(
-                      ([key, value]) => value ? (
+                    {Object.entries(item.metadata.selected_options as Record<string, string>)
+                      .filter(([key]) => key !== "delivery_date") // Date handled globally in checkout
+                      .map(([key, value]) => value ? (
                         <p key={key} className="text-xs text-[#6B5B4E]">• {value}</p>
                       ) : null
                     )}
@@ -239,16 +292,23 @@ export default function CheckoutIsland() {
 
         <div className="mt-4">
           <label className="block text-xs text-[#6B5B4E] mb-1">
-            Fecha de entrega * (mínimo 2 días de anticipación)
+            Fecha de entrega *
+            <span className="ml-1 text-[#8B6F47] font-semibold">
+              (mínimo {maxPrepDays} día{maxPrepDays !== 1 ? "s" : ""} hábil{maxPrepDays !== 1 ? "es" : ""},
+              entregas lunes a sábado)
+            </span>
           </label>
           <input
             type="date"
             required
             min={minDate}
             value={deliveryDate}
-            onChange={(e) => setDeliveryDate(e.target.value)}
+            onChange={(e) => handleDateChange(e.target.value)}
             className="w-full p-3 border-2 border-gray-200 rounded-xl text-sm focus:border-[#8B6F47] focus:outline-none"
           />
+          {dateError && (
+            <p className="text-xs text-amber-600 mt-1">{dateError}</p>
+          )}
         </div>
 
         <textarea
