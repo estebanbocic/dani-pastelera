@@ -1,5 +1,18 @@
 @import "tailwindcss";
 
+/**
+ * Fluid typography base.
+ * All Tailwind rem-based sizes (font, spacing, max-width) scale with this.
+ * Mobile:        15px minimum
+ * Standard HD:   ~18-19px
+ * 2K / 4K:       22px maximum
+ */
+@layer base {
+  html {
+    font-size: clamp(15px, 1vw, 22px);
+  }
+}
+
 @theme {
   --color-cream: #FFF8F0;
   --color-warm-brown: #8B6F47;

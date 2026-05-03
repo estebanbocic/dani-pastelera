@@ -82,7 +82,7 @@ const variantData = product?.variants?.map((v) => {
       nav .links a:hover { color: var(--color-warm-brown); }
 
       .product-layout {
-        max-width: 900px;
+        max-width: min(1200px, 90vw);
         margin: 2rem auto;
         padding: 0 1.5rem;
         display: grid;
@@ -95,11 +95,11 @@ const variantData = product?.variants?.map((v) => {
       .product-image {
         background: linear-gradient(135deg, var(--color-soft-pink), #f0e6dd);
         border-radius: 16px;
-        min-height: 350px;
+        min-height: clamp(300px, 30vw, 520px);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 5rem;
+        font-size: clamp(4rem, 6vw, 8rem);
       }
       .product-info h1 {
         font-size: 1.8rem;
