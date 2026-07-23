@@ -19,6 +19,17 @@
   "checkout": {
     "title": "Checkout",
     "orderConfirmation": "Thank you for your order!",
-    "orderConfirmationMessage": "We received your purchase and will prepare it according to the selected date."
+    "orderConfirmationMessage": "We received your purchase and will prepare it according to the selected date.",
+    "paymentStartError": "We couldn't start the Mercado Pago payment.",
+    "paymentReturn": {
+      "approvedTitle": "We're verifying your payment",
+      "approvedMessage": "We received Mercado Pago's response. We'll confirm your order once the payment is validated.",
+      "failedTitle": "We couldn't complete the payment",
+      "failedMessage": "Your order wasn't confirmed. You can return to checkout and try again.",
+      "pendingTitle": "Your payment is pending",
+      "pendingMessage": "Mercado Pago is still processing your payment. We'll notify you once it's confirmed.",
+      "defaultTitle": "We're verifying your payment",
+      "defaultMessage": "We'll confirm your order once the payment is validated."
+    }
   }
 }

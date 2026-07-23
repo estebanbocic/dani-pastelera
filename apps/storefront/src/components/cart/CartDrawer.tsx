@@ -9,7 +9,7 @@ function formatCLP(amount: number): string {
 }
 
 export default function CartDrawer() {
-  const { cart, items, itemCount, isOpen, isLoading, closeCart, removeItem } = useCart()
+  const { cart, items, itemCount, isOpen, isLoading, closeCart, removeItem, updateItemQuantity } = useCart()
 
   if (!isOpen) return null
 
@@ -84,15 +84,35 @@ export default function CartDrawer() {
                     <button
                       onClick={() => removeItem(item.id)}
                       disabled={isLoading}
-                      className="text-xs text-red-400 hover:text-red-600 ml-2"
-                    >
-                      Eliminar
+                      aria-label={`Eliminar ${item.variant?.product?.title || item.title} del carrito`}
+                      className="ml-3 flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-red-500 text-white shadow-sm transition-colors hover:bg-red-600 focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+                    ><svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v5"/><path d="M14 11v5"/></svg>
                     </button>
                   </div>
                   <div className="flex justify-between items-center mt-3 pt-2 border-t border-gray-100">
-                    <span className="text-xs text-[#6B5B4E]">
-                      Cantidad: {item.quantity}
-                    </span>
+                    <div className="flex items-center gap-2" aria-label={`Cantidad de ${item.variant?.product?.title || item.title}`}>
+                      <button
+                        type="button"
+                        onClick={() => updateItemQuantity(item.id, item.quantity - 1)}
+                        disabled={isLoading || item.quantity === 1}
+                        aria-label="Reducir cantidad"
+                        className="flex h-11 w-11 items-center justify-center rounded-full border-2 border-[#8B6F47] text-xl font-bold text-[#8B6F47] transition-colors hover:bg-[#F5D5CB] disabled:cursor-not-allowed disabled:opacity-40"
+                      >
+                        −
+                      </button>
+                      <span className="min-w-8 text-center font-bold text-[#3D3028]" aria-live="polite">
+                        {item.quantity}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => updateItemQuantity(item.id, item.quantity + 1)}
+                        disabled={isLoading}
+                        aria-label="Aumentar cantidad"
+                        className="flex h-11 w-11 items-center justify-center rounded-full bg-[#8B6F47] text-xl font-bold text-white shadow-sm transition-colors hover:bg-[#7A5F3D] disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        +
+                      </button>
+                    </div>
                     <span className="font-bold text-[#8B6F47]">
                       {formatCLP(item.unit_price * item.quantity)}
                     </span>

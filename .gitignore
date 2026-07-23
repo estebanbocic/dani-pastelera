@@ -41,3 +41,5 @@ coverage/
 # Misc
 *.local
 scope/
+.vercel/
+*:Zone.Identifier

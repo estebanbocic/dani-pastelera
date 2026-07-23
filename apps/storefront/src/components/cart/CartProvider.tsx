@@ -4,6 +4,7 @@ import {
   addLineItem,
   addConfiguredItem,
   removeLineItem,
+  updateLineItem,
   getCart,
   getCartId,
   type Cart,
@@ -19,6 +20,7 @@ type CartContextType = {
   openCart: () => void
   closeCart: () => void
   addItem: (variantId: string, quantity: number, metadata?: Record<string, any>) => Promise<void>
+  updateItemQuantity: (lineItemId: string, quantity: number) => Promise<void>
   removeItem: (lineItemId: string) => Promise<void>
   refreshCart: () => Promise<void>
 }
@@ -106,6 +108,20 @@ export default function CartProvider({ children }: { children: ReactNode }) {
     }
   }, [cart])
 
+  const updateItemQuantity = useCallback(async (lineItemId: string, quantity: number) => {
+    if (!cart || quantity < 1) return
+    setIsLoading(true)
+    try {
+      await updateLineItem(cart.id, lineItemId, quantity)
+      const fresh = await getCart(cart.id)
+      if (fresh) setCart(fresh)
+    } catch (err) {
+      console.error("Failed to update item quantity:", err)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [cart])
+
   return (
     <CartContext.Provider value={{
       cart,
@@ -116,6 +132,7 @@ export default function CartProvider({ children }: { children: ReactNode }) {
       openCart: () => setIsOpen(true),
       closeCart: () => setIsOpen(false),
       addItem,
+      updateItemQuantity,
       removeItem,
       refreshCart,
     }}>

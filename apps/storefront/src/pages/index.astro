@@ -35,8 +35,14 @@ try {
         <a href="/productos" class="text-[#6B5B4E] text-sm no-underline hover:text-[#8B6F47]">Productos</a>
       </div>
       <!-- Center: logo -->
-      <a href="/" class="text-[#8B6F47] font-bold text-lg no-underline text-center">
-        🧁 {es.site.name}
+      <a href="/" class="h-14 w-32 justify-self-center overflow-hidden" aria-label={es.site.name}>
+        <img
+          src="/dani-pastelera-logo.png"
+          alt={es.site.name}
+          width="500"
+          height="500"
+          class="h-full w-full object-cover object-[center_35%]"
+        />
       </a>
       <!-- Right: cart -->
       <div class="flex justify-end">
@@ -170,7 +176,15 @@ try {
     <footer class="bg-[#3D3028] text-[#d4c5b5] py-12">
       <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-8">
         <div>
-          <h3 class="text-white font-bold text-lg mb-3">🧁 {es.site.name}</h3>
+          <a href="/" aria-label={es.site.name} class="mb-3 block h-20 w-40 overflow-hidden">
+            <img
+              src="/dani-pastelera-logo.png"
+              alt={es.site.name}
+              width="500"
+              height="500"
+              class="h-full w-full object-cover object-[center_35%]"
+            />
+          </a>
           <p class="text-sm">Pastelería saludable, hecha con cariño. Tortas y dulces sin gluten, sin azúcar y veganos.</p>
         </div>
         <div>

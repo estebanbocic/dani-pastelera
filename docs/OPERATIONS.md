@@ -133,3 +133,43 @@ Para activar los emails:
    - `FROM_EMAIL=pedidos@danipastelera.cl`
 
 Sin estas variables, el sistema funciona normalmente pero no envía emails (solo registra un aviso en los logs).
+
+---
+
+## 8. Configuración de Mercado Pago
+
+La tienda usa Checkout Pro hospedado. El cliente se redirige a Mercado Pago y el pedido
+solo se crea después de que un webhook firmado confirma el pago.
+
+### Modo de pruebas
+
+Configura estas variables en el backend local o de pruebas:
+
+```txt
+MERCADO_PAGO_MODE=test
+MERCADO_PAGO_TEST_ACCESS_TOKEN=<token-de-prueba>
+MERCADO_PAGO_TEST_WEBHOOK_SECRET=<secret-de-firma>
+```
+
+El modo de pruebas usa `sandbox_init_point`. Usa únicamente las tarjetas de prueba de
+Mercado Pago; nunca tarjetas reales. Expón `POST /store/webhooks/mercado-pago` mediante
+una URL HTTPS pública y configura esa URL en Mercado Pago para recibir notificaciones.
+
+### Modo de producción
+
+En Railway, configura:
+
+```txt
+MERCADO_PAGO_MODE=production
+MERCADO_PAGO_PRODUCTION_ACCESS_TOKEN=<token-de-produccion>
+MERCADO_PAGO_PRODUCTION_WEBHOOK_SECRET=<secret-de-firma>
+MEDUSA_BACKEND_URL=https://api.danipastelera.cl
+STORE_CORS=https://danipastelera.cl
+```
+
+Activa las credenciales de producción en Mercado Pago y registra el evento `payment`
+para la URL pública `https://api.danipastelera.cl/store/webhooks/mercado-pago`.
+Las credenciales y secretos son exclusivos del backend; no se agregan al storefront.
+
+Después de desplegar, ejecuta una compra de prueba y confirma que el pedido aparece
+con pago confirmado antes de prepararlo.

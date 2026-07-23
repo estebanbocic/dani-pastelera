@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { clearCartId } from "../lib/cart"
+import es from "../i18n/es.json"
 
 function formatCLP(amount: number): string {
   return new Intl.NumberFormat("es-CL", {
@@ -12,17 +12,20 @@ function formatCLP(amount: number): string {
 export default function OrderConfirmation() {
   const [checkoutData, setCheckoutData] = useState<any>(null)
   const [cart, setCart] = useState<any>(null)
+  const [paymentStatus, setPaymentStatus] = useState("pending")
 
   useEffect(() => {
     const data = sessionStorage.getItem("dani_checkout_data")
     const cartData = sessionStorage.getItem("dani_checkout_cart")
     if (data) setCheckoutData(JSON.parse(data))
     if (cartData) setCart(JSON.parse(cartData))
+    const status = new URLSearchParams(window.location.search).get("status")
+    if (status === "approved" || status === "failed" || status === "pending") {
+      setPaymentStatus(status)
+    }
 
-    // Clear cart after successful order
-    clearCartId()
-    sessionStorage.removeItem("dani_checkout_data")
-    sessionStorage.removeItem("dani_checkout_cart")
+    // Mercado Pago's browser return is not authoritative. The verified webhook
+    // completes the cart, after which its stale local ID is cleared automatically.
   }, [])
 
   if (!checkoutData || !cart) {
@@ -39,12 +42,33 @@ export default function OrderConfirmation() {
 
   const items = cart.items || []
   const subtotal = cart.total || cart.subtotal || 0
+  const paymentCopy = {
+    approved: {
+      icon: "⏳",
+      title: es.checkout.paymentReturn.approvedTitle,
+      message: es.checkout.paymentReturn.approvedMessage,
+    },
+    failed: {
+      icon: "⚠️",
+      title: es.checkout.paymentReturn.failedTitle,
+      message: es.checkout.paymentReturn.failedMessage,
+    },
+    pending: {
+      icon: "⏳",
+      title: es.checkout.paymentReturn.pendingTitle,
+      message: es.checkout.paymentReturn.pendingMessage,
+    },
+  }[paymentStatus] || {
+    icon: "⏳",
+    title: es.checkout.paymentReturn.defaultTitle,
+    message: es.checkout.paymentReturn.defaultMessage,
+  }
 
   return (
     <div className="text-center">
-      <div className="text-5xl mb-4">🎉</div>
+      <div className="text-5xl mb-4">{paymentCopy.icon}</div>
       <h1 className="text-3xl font-bold text-[#8B6F47] mb-2">
-        ¡Gracias por tu pedido!
+        {paymentCopy.title}
       </h1>
       {checkoutData.orderDisplayId && (
         <p className="text-lg font-semibold text-[#3D3028] mb-2">
@@ -52,7 +76,7 @@ export default function OrderConfirmation() {
         </p>
       )}
       <p className="text-[#6B5B4E] mb-8">
-        Recibimos tu compra y comenzaremos a prepararla según la fecha seleccionada.
+        {paymentCopy.message}
       </p>
 
       {/* Order details */}

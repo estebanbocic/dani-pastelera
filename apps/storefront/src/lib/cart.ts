@@ -237,10 +237,19 @@ export async function initPaymentCollection(
 
 export async function initPaymentSession(
   paymentCollectionId: string,
-  providerId: string = "pp_system_default"
-): Promise<any> {
+  providerId: string = "pp_mercado-pago_mercado-pago"
+): Promise<{
+  payment_collection: {
+    payment_sessions?: Array<{
+      provider_id: string
+      data?: {
+        checkout_url?: string
+      }
+    }>
+  }
+}> {
   const res = await fetch(
-    `${MEDUSA_URL}/store/payment-collections/${paymentCollectionId}/payment-sessions`,
+    `${MEDUSA_URL}/store/payment-collections/${paymentCollectionId}/payment-sessions?fields=+payment_sessions.*`,
     {
       method: "POST",
       headers,

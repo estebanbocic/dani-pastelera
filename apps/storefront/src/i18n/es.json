@@ -19,6 +19,17 @@
   "checkout": {
     "title": "Checkout",
     "orderConfirmation": "¡Gracias por tu pedido!",
-    "orderConfirmationMessage": "Recibimos tu compra y comenzaremos a prepararla según la fecha seleccionada."
+    "orderConfirmationMessage": "Recibimos tu compra y comenzaremos a prepararla según la fecha seleccionada.",
+    "paymentStartError": "No fue posible iniciar el pago con Mercado Pago.",
+    "paymentReturn": {
+      "approvedTitle": "Estamos verificando tu pago",
+      "approvedMessage": "Recibimos la respuesta de Mercado Pago. Confirmaremos tu pedido cuando validemos el pago.",
+      "failedTitle": "No se pudo completar el pago",
+      "failedMessage": "Tu pedido no fue confirmado. Puedes volver al checkout para intentarlo nuevamente.",
+      "pendingTitle": "Tu pago está pendiente",
+      "pendingMessage": "Mercado Pago aún está procesando tu pago. Te avisaremos cuando quede confirmado.",
+      "defaultTitle": "Estamos verificando tu pago",
+      "defaultMessage": "Confirmaremos tu pedido cuando validemos el pago."
+    }
   }
 }

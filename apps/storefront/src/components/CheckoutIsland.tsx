@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react"
-import { getCart, getCartId, updateCartCustomer, initPaymentCollection, initPaymentSession, completeCart, clearCartId, type Cart, type CartLineItem } from "../lib/cart"
+import { getCart, getCartId, updateCartCustomer, initPaymentCollection, initPaymentSession, type Cart } from "../lib/cart"
+import es from "../i18n/es.json"
 
 /**
  * Adds N business days (Mon–Sat) to a date.
@@ -119,30 +120,31 @@ export default function CheckoutIsland() {
         delivery_info: deliveryInfo,
       })
 
-      // 2. Initialize payment collection + session
+      // 2. Create the server-authoritative Mercado Pago Checkout Pro preference.
       const paymentCollection = await initPaymentCollection(cart.id)
-      await initPaymentSession(paymentCollection.id)
+      const sessionResult = await initPaymentSession(paymentCollection.id)
+      const paymentSession = sessionResult.payment_collection.payment_sessions?.find(
+        (session) => session.provider_id === "pp_mercado-pago_mercado-pago"
+      )
+      const checkoutUrl = paymentSession?.data?.checkout_url
 
-      // 3. Complete the cart → creates a Medusa order
-      const result = await completeCart(cart.id)
+      if (!checkoutUrl) {
+        throw new Error(es.checkout.paymentStartError)
+      }
 
-      // 3. Store data for confirmation page
+      // 3. Preserve the pending checkout for the payment return page. The webhook
+      // completes the Medusa cart only after Mercado Pago confirms the payment.
       const checkoutData = {
         cartId: cart.id,
-        orderId: result.order?.id,
-        orderDisplayId: result.order?.display_id,
         customer: { name, email, phone },
         delivery: deliveryInfo,
+        paymentStatus: "pending",
       }
       sessionStorage.setItem("dani_checkout_data", JSON.stringify(checkoutData))
       sessionStorage.setItem("dani_checkout_cart", JSON.stringify(cart))
 
-      // 4. Clear cart ID (order is now created)
-      clearCartId()
-
-      // 5. Redirect to confirmation
-      // TODO: When Mercado Pago is configured, redirect to MP payment URL instead
-      window.location.href = "/orden-confirmada"
+      // 4. Do not complete or clear the cart before the verified payment webhook.
+      window.location.assign(checkoutUrl)
     } catch (err: any) {
       console.error("Checkout error:", err)
       alert(err.message || "Error al procesar el pedido. Por favor intenta de nuevo.")

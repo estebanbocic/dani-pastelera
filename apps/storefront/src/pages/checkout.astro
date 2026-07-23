@@ -13,7 +13,15 @@ import CheckoutIsland from "../components/CheckoutIsland";
   <body class="bg-[#FFF8F0] text-[#3D3028] font-sans min-h-screen">
 
     <nav class="flex justify-between items-center px-6 py-4 bg-white shadow-sm">
-      <a href="/" class="text-[#8B6F47] font-bold text-lg no-underline">🧁 {es.site.name}</a>
+      <a href="/" class="h-14 w-32 overflow-hidden" aria-label={es.site.name}>
+        <img
+          src="/dani-pastelera-logo.png"
+          alt={es.site.name}
+          width="500"
+          height="500"
+          class="h-full w-full object-cover object-[center_35%]"
+        />
+      </a>
       <div class="flex gap-6">
         <a href="/productos" class="text-[#6B5B4E] text-sm no-underline hover:text-[#8B6F47]">Productos</a>
       </div>

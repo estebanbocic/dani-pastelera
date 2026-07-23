@@ -178,11 +178,14 @@ pnpm --filter @dani-pastelera/storefront dev   # port 4321
 - `apps/backend/src/scripts/seed-configurator.ts` — Configurator schema seed
 - `apps/storefront/src/components/configurator/` — React configurator components
 - `apps/storefront/src/styles/global.css` — Tailwind v4 with bakery design tokens
+- `apps/storefront/public/dani-pastelera-logo.png` — Storefront brand logo asset
 - `apps/storefront/src/lib/cart.ts` — Medusa Cart API client
 - `apps/storefront/src/components/cart/` — CartProvider, CartDrawer, CartIsland
 - `apps/storefront/src/components/CheckoutIsland.tsx` — Checkout form
 - `apps/storefront/src/components/OrderConfirmation.tsx` — Order confirmation
+- `apps/storefront/astro.config.mjs` — Astro/Vite configuration, including temporary tunnel host allowance
 - `apps/backend/src/modules/mercado-pago/` — Mercado Pago payment provider
+- `apps/backend/src/scripts/enable-mercado-pago.ts` — Idempotently enables Checkout Pro for CLP regions
 - `apps/backend/src/api/store/webhooks/mercado-pago/` — IPN webhook (captures payment on approval)
 - `apps/backend/src/lib/email.ts` — Resend email service (customer + owner notifications)
 - `apps/backend/src/templates/` — HTML email templates (order-confirmation, order-notification)
@@ -192,6 +195,9 @@ pnpm --filter @dani-pastelera/storefront dev   # port 4321
 
 ## Recent Changes
 
+- **2026-07-22:** Added explicit `STOREFRONT_URL` handling for Mercado Pago return URLs and local Cloudflare Tunnel support for CGNAT testing. Vercel Git deployments were paused; the `dev` branch remains available for future deployment.
+- **2026-07-22:** Completed Mercado Pago Checkout Pro integration: explicit test/production credentials, hosted checkout redirect, signed webhook reconciliation, and Chile-region provider setup script.
+- **2026-07-21:** Added the Dani Pastelera logo across storefront headers and homepage footer.
 - **2026-05-02:** Phase 6 completed. Email notifications (Resend), order status workflow + admin widget, MP webhook payment capture, OPERATIONS.md.
 - **2026-05-02:** Phase 5 completed. Homepage, cart, checkout, Mercado Pago provider, webhook, order confirmation.
 - **2026-05-01:** Phase 3 completed.
@@ -203,4 +209,4 @@ pnpm --filter @dani-pastelera/storefront dev   # port 4321
 
 ---
 
-*Last updated: 2026-05-02*
+*Last updated: 2026-07-22*
